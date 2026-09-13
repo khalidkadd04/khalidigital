@@ -1,24 +1,21 @@
 ---
-// Page d'administration Decap CMS pour Astro
+// Page d'administration CMS (compatible Decap CMS / Sveltia CMS)
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 <!doctype html>
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Administration — Mon Portfolio (Decap CMS)</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <style>
-      body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background-color: #0d0d14;
-        color: #f2f0ec;
-      }
-    </style>
+    <title>Administration — Mon Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <!-- Lien vers la configuration Decap CMS / Sveltia CMS -->
+    <link href={`${base}admin/config.yml`} type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <!-- Decap CMS Core -->
-    <script src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js" is:inline></script>
+    <!-- Moteur CMS moderne 100% compatible avec la configuration Decap CMS.
+         Permet de se connecter directement avec un Jeton d'accès GitHub (Personal Access Token)
+         sans nécessiter de serveur OAuth externe. -->
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" is:inline></script>
   </body>
 </html>

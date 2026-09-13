@@ -5,7 +5,7 @@
 # 1. Mode de connexion
 backend:
   name: github
-  repo: VOTRE_PSEUDO/my-portfolio # Remplacer par votre pseudo GitHub / nom du repo
+  repo: khalidkadd04/khalidigital # Dépôt GitHub pour Decap CMS
   branch: main
 
 # Active l'édition locale sans mot de passe via 'npm run cms'

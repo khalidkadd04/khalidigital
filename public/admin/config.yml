@@ -5,7 +5,7 @@
 # 1. Mode de connexion
 backend:
   name: github
-  repo: khalidkadd04/khalidigital # Dépôt GitHub pour le CMS
+  repo: khalidkadd04/khalidkaddouri # Dépôt GitHub pour le CMS
   branch: main
   auth_methods:
     - token

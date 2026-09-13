@@ -2,9 +2,9 @@
 title: E-commerce KPI Dashboard
 date: 2025-03-15
 category: bi
+status: En pause
 order: 1
 visibility: both
-status: En pause
 featured: true
 summary: Interactive Power BI dashboard tracking revenue, conversion rate, and customer LTV for an online retailer.
 description: Built a multi-page Power BI report connecting to a PostgreSQL database via DirectQuery. Designed a star-schema data model in Power Query, wrote DAX measures for rolling 30-day revenue, cohort retention, and margin by product category. The report refreshes daily and is embedded in the client's internal portal.

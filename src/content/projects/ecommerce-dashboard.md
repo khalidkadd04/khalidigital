@@ -10,8 +10,12 @@ summary: Interactive Power BI dashboard tracking revenue, conversion rate, and c
 description: Built a multi-page Power BI report connecting to a PostgreSQL database via DirectQuery. Designed a star-schema data model in Power Query, wrote DAX measures for rolling 30-day revenue, cohort retention, and margin by product category. The report refreshes daily and is embedded in the client's internal portal.
 image: /uploads/Excel-Dashboard-01.webp
 gallery:
-  - image: /uploads/Excel-Dashboard-01.webp
-    caption: Vue d'ensemble du tableau de bord et analyse des ventes e-commerce
+  - image: /uploads/Excel-pivot_table-01.webp
+    caption: ''
+  - image: /uploads/Excel-working_sheet-01.webp
+    caption: ''
+  - image: /uploads/Excel-bike_buyers-01.webp
+    caption: ''
 link: https://example.com/demo
 tags:
   - Data Cleaning

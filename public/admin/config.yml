@@ -37,7 +37,7 @@ collections:
       preview: false
     fields:
       - { label: "Titre du projet", name: "title", widget: "string" }
-      - { label: "Date de réalisation", name: "date", widget: "date", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD" }
+      - { label: "Date de réalisation", name: "date", widget: "datetime", type: "date", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
       - label: "Catégorie"
         name: "category"
         widget: "select"

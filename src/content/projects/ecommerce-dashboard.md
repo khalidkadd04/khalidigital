@@ -6,6 +6,7 @@ tags: ["Power BI", "DAX", "SQL", "PostgreSQL", "Data Modeling"]
 category: "bi"
 date: "2025-03-15"
 featured: true
+status: "Terminé"
 link: "https://example.com/demo"
 metrics:
   - value: "+28%"

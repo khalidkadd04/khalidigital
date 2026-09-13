@@ -5,6 +5,7 @@ description: "Academic project simulating a Google Ads Search campaign for a fic
 tags: ["Google Ads", "SEM", "Keyword Research", "Ad Copywriting", "ROAS Modelling"]
 category: "marketing"
 date: "2024-11-10"
+status: "En cours"
 metrics:
   - value: "8.2"
     label: "Projected Quality Score"

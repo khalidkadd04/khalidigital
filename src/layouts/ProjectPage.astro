@@ -20,6 +20,7 @@ interface Props {
   tags: string[];
   category: 'bi' | 'marketing' | 'analytics' | 'strategy';
   date: Date;
+  status?: string;
   link?: string;
   metrics?: Metric[];
   image?: string;
@@ -33,6 +34,7 @@ const {
   tags = [],
   category = 'bi',
   date,
+  status,
   link,
   metrics = [],
   image,
@@ -50,6 +52,22 @@ const categoryMeta: Record<string, { label: string; tagClass: string; icon: stri
   strategy:  { label: 'Stratégie Digitale',    tagClass: '',  icon: '📱' },
 };
 const catInfo = categoryMeta[category] ?? { label: category, tagClass: '', icon: '📊' };
+
+const getStatusBadge = (s?: string) => {
+  if (!s || !s.trim()) return null;
+  const lower = s.toLowerCase().trim();
+  if (lower.includes('termin') || lower.includes('fini') || lower.includes('complét')) {
+    return { cls: 'status-done', dotCls: 'dot-done', text: s };
+  }
+  if (lower.includes('cours') || lower.includes('progr') || lower.includes('développ')) {
+    return { cls: 'status-progress', dotCls: 'dot-progress', text: s };
+  }
+  if (lower.includes('test') || lower.includes('révis')) {
+    return { cls: 'status-test', dotCls: 'dot-test', text: s };
+  }
+  return { cls: 'status-default', dotCls: 'dot-default', text: s };
+};
+const statusBadge = getStatusBadge(status);
 
 const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
   day: 'numeric',
@@ -320,6 +338,40 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
     }
     .meta-badge.t { background: rgba(14,165,160,0.12); color: var(--teal); border-color: rgba(14,165,160,0.25); }
     .meta-badge.a { background: rgba(245,158,11,0.12); color: var(--amber); border-color: rgba(245,158,11,0.25); }
+    .meta-badge.status-done {
+      background: rgba(34,197,94,0.12);
+      color: #4ade80;
+      border-color: rgba(34,197,94,0.3);
+    }
+    .meta-badge.status-progress {
+      background: rgba(245,158,11,0.12);
+      color: #fbbf24;
+      border-color: rgba(245,158,11,0.3);
+    }
+    .meta-badge.status-test {
+      background: rgba(14,165,160,0.12);
+      color: var(--teal);
+      border-color: rgba(14,165,160,0.3);
+    }
+    .meta-badge.status-default {
+      background: rgba(124,58,237,0.12);
+      color: var(--violet-l);
+      border-color: rgba(124,58,237,0.3);
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 6px currentColor;
+    }
+    .dot-progress {
+      animation: pulse-dot 2s infinite ease-in-out;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.8); }
+    }
     .meta-date {
       font-size: 0.78rem;
       color: var(--muted);
@@ -748,6 +800,12 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
         <span class={`meta-badge ${catInfo.tagClass}`}>
           {catInfo.icon} {catInfo.label}
         </span>
+        {statusBadge && (
+          <span class={`meta-badge status-badge ${statusBadge.cls}`}>
+            <span class={`status-dot ${statusBadge.dotCls}`}></span>
+            {statusBadge.text}
+          </span>
+        )}
         {formattedDate && (
           <time datetime={date ? new Date(date).toISOString() : ''} class="meta-date">
             📅 {formattedDate}

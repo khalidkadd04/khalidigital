@@ -46,6 +46,17 @@ collections:
           - { label: "Marketing Digital", value: "marketing" }
           - { label: "Analytics & Data", value: "analytics" }
           - { label: "Stratégie", value: "strategy" }
+      - label: "Statut du projet (Optionnel)"
+        name: "status"
+        widget: "select"
+        required: false
+        hint: "Sélectionnez le statut (Terminé, En cours...) ou laissez vide"
+        options:
+          - { label: "Terminé", value: "Terminé" }
+          - { label: "En cours", value: "En cours" }
+          - { label: "En phase de test", value: "En phase de test" }
+          - { label: "En pause", value: "En pause" }
+          - { label: "Archivé", value: "Archivé" }
       - { label: "Mettre en avant (Featured)", name: "featured", widget: "boolean", default: false, required: false }
       - { label: "Résumé court (affiché sur la carte)", name: "summary", widget: "string" }
       - { label: "Description complète", name: "description", widget: "text" }

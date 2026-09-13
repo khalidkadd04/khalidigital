@@ -16,6 +16,7 @@ const projects = defineCollection({
     category: z.enum(['bi', 'marketing', 'analytics', 'strategy']),
     date: z.coerce.date(),
     featured: z.boolean().optional().default(false),
+    status: z.string().optional(),
     link: z.string().url().optional(),
     image: z.string().optional(),
     metrics: z

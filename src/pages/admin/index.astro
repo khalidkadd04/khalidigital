@@ -11,11 +11,168 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <!-- Lien vers la configuration Decap CMS / Sveltia CMS -->
     <link href={`${base}admin/config.yml`} type="text/yaml" rel="cms-config-url" />
+
+    <style is:inline>
+      /* ═══════════════════════════════════════════════════════════════
+         INFOBULLES D'AIDE ET EXPLICATIONS AU SURVOL (SVELTIA CMS)
+         ═══════════════════════════════════════════════════════════════ */
+      .cms-field-help-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: rgba(124, 58, 237, 0.18);
+        color: #a78bfa;
+        border: 1px solid rgba(124, 58, 237, 0.4);
+        font-size: 11px;
+        font-weight: 700;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1;
+        margin-left: 8px;
+        cursor: help;
+        vertical-align: middle;
+        position: relative;
+        transition: all 0.2s ease;
+        user-select: none;
+        flex-shrink: 0;
+      }
+      .cms-field-help-btn:hover {
+        background: #7c3aed;
+        color: #ffffff;
+        border-color: #7c3aed;
+        box-shadow: 0 0 12px rgba(124, 58, 237, 0.55);
+        transform: scale(1.12);
+      }
+      .cms-global-tooltip {
+        position: fixed;
+        z-index: 999999;
+        background: #141424;
+        color: #f5f2ee;
+        border: 1px solid rgba(124, 58, 237, 0.45);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75), 0 0 15px rgba(124, 58, 237, 0.25);
+        padding: 9px 13px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.45;
+        white-space: normal;
+        max-width: 320px;
+        min-width: 180px;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        transform: translate(-50%, -6px);
+        transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+      }
+      .cms-global-tooltip.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, 0);
+      }
+      .cms-global-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: #141424;
+      }
+      .cms-global-tooltip.bottom::after {
+        top: auto;
+        bottom: 100%;
+        border-top-color: transparent;
+        border-bottom-color: #141424;
+      }
+    </style>
   </head>
   <body>
     <!-- Moteur CMS moderne 100% compatible avec la configuration Decap CMS.
          Permet de se connecter directement avec un Jeton d'accès GitHub (Personal Access Token)
          sans nécessiter de serveur OAuth externe. -->
     <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" is:inline></script>
+
+    <script is:inline>
+      let globalTip = null;
+
+      function getTooltipEl() {
+        if (!globalTip) {
+          globalTip = document.createElement('div');
+          globalTip.className = 'cms-global-tooltip';
+          document.body.appendChild(globalTip);
+        }
+        return globalTip;
+      }
+
+      function showFieldTooltip(e, text) {
+        const tip = getTooltipEl();
+        tip.textContent = text;
+        tip.classList.add('visible');
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const tipRect = tip.getBoundingClientRect();
+
+        let top = rect.top - tipRect.height - 8;
+        let left = rect.left + rect.width / 2;
+
+        if (top < 10) {
+          top = rect.bottom + 8;
+          tip.classList.add('bottom');
+        } else {
+          tip.classList.remove('bottom');
+        }
+
+        const maxLeft = window.innerWidth - tipRect.width / 2 - 16;
+        const minLeft = tipRect.width / 2 + 16;
+        left = Math.max(minLeft, Math.min(maxLeft, left));
+
+        tip.style.top = `${top}px`;
+        tip.style.left = `${left}px`;
+      }
+
+      function hideFieldTooltip() {
+        if (globalTip) {
+          globalTip.classList.remove('visible');
+        }
+      }
+
+      // Injection dynamique des petites icônes d'aide "(i)" avec infobulle au survol
+      function setupFieldHelpTooltips() {
+        const hints = document.querySelectorAll('.hint, [class*="hint"], .comment, [class*="comment"]');
+        hints.forEach((hint) => {
+          const text = hint.textContent?.trim();
+          if (!text || text.length < 2) return;
+
+          const group = hint.closest('section, [role="group"], [class*="field"], [class*="wrapper"]') || hint.parentElement;
+          if (!group) return;
+
+          if (group.querySelector('.cms-field-help-btn')) return;
+
+          const label = group.querySelector('header h4, header [role="none"], label, [class*="label"], header');
+          if (label) {
+            const btn = document.createElement('span');
+            btn.className = 'cms-field-help-btn';
+            btn.textContent = 'i';
+            btn.setAttribute('title', text);
+            btn.setAttribute('aria-label', text);
+
+            btn.addEventListener('mouseenter', (e) => showFieldTooltip(e, text));
+            btn.addEventListener('mouseleave', hideFieldTooltip);
+            btn.addEventListener('click', (e) => e.stopPropagation());
+
+            label.appendChild(btn);
+          }
+        });
+      }
+
+      // Observer pour attacher les bulles dès que l'utilisateur navigue dans un formulaire
+      const observer = new MutationObserver(() => {
+        setupFieldHelpTooltips();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      setInterval(setupFieldHelpTooltips, 1000);
+    </script>
   </body>
 </html>

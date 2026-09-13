@@ -48,6 +48,16 @@ const getStatusBadge = (s?: string) => {
   }
   return { cls: 'status-default', dotCls: 'dot-default', text: s };
 };
+
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  const cleanPath = url.replace(/^\/+/, '');
+  const encodedPath = cleanPath.split('/').map((segment) => encodeURIComponent(decodeURIComponent(segment))).join('/');
+  return `${base}${encodedPath}`;
+};
 ---
 
 <!DOCTYPE html>
@@ -1039,7 +1049,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           Mes projets
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <a href={profile.cvFile || '#contact'} class="btn btn-ghost" download={profile.cvFile ? true : undefined}>
+        <a href={resolveMediaUrl(profile.cvFile) || '#contact'} class="btn btn-ghost" download={profile.cvFile ? true : undefined}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Télécharger CV
         </a>
@@ -1055,9 +1065,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="section-eyebrow reveal">01 — À propos</div>
     <div class="about-grid">
 
+      <!-- 
+        ========================================================================
+        RECOMMANDATIONS POUR LA PHOTO DE PROFIL (AVATAR) :
+        - Ratio recommandé : 1:1 (Format carré ou portrait centré)
+        - Dimensions idéales : 600 x 600 px (minimum 400 x 400 px)
+        - Formats acceptés : WebP (optimal pour le web) ou JPG/PNG compressé
+        - Poids max conseillé : < 300 Ko pour garantir un temps de chargement ultra-rapide
+        - Style conseillé : Arrière-plan épuré ou professionnel, visage bien cadré
+        ========================================================================
+      -->
       <div class="about-photo-wrap reveal">
         {profile.avatar ? (
-          <img src={profile.avatar} alt={`${profile.firstName} ${profile.lastName}`} class="about-avatar-img" />
+          <img src={resolveMediaUrl(profile.avatar)} alt={`${profile.firstName} ${profile.lastName}`} class="about-avatar-img" />
         ) : (
           <div class="photo-placeholder">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -1094,6 +1114,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="projects-grid">
       {projects.map((project) => (
         <article class="project-card reveal">
+          <!-- 
+            ========================================================================
+            RECOMMANDATIONS POUR L'IMAGE DE COUVERTURE DU PROJET (CARTE D'ACCUEIL) :
+            - Ratio recommandé : 16:9 (Format paysage standard)
+            - Dimensions idéales : 1280 x 720 px (ou 1920 x 1080 px)
+            - Formats recommandés : WebP (optimal), JPG ou PNG
+            - Poids max conseillé : < 500 Ko pour un chargement fluide
+            - Visuel conseillé : Capture nette de dashboard, mockup ou infographie clé
+            ========================================================================
+          -->
           <div class="project-thumb">
             {(() => {
               const sb = getStatusBadge(project.data.status);
@@ -1105,7 +1135,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               ) : null;
             })()}
             {project.data.image ? (
-              <img src={project.data.image} alt={project.data.title} loading="lazy" />
+              <img src={resolveMediaUrl(project.data.image)} alt={project.data.title} loading="lazy" />
             ) : (
               <span class="thumb-icon">{getCategoryIcon(project.data.category)}</span>
             )}

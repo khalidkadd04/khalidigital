@@ -74,6 +74,16 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
   month: 'long',
   year: 'numeric',
 }) : '';
+
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  const cleanPath = url.replace(/^\/+/, '');
+  const encodedPath = cleanPath.split('/').map((segment) => encodeURIComponent(decodeURIComponent(segment))).join('/');
+  return `${base}${encodedPath}`;
+};
 ---
 
 <!DOCTYPE html>
@@ -808,7 +818,7 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
         )}
         {formattedDate && (
           <time datetime={date ? new Date(date).toISOString() : ''} class="meta-date">
-            📅 {formattedDate}
+            {formattedDate}
           </time>
         )}
       </div>
@@ -853,11 +863,20 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
         )}
       </div>
 
-      <!-- Illustration du projet (si présente) -->
+      <!-- 
+        ========================================================================
+        RECOMMANDATIONS POUR L'ILLUSTRATION PRINCIPALE DU PROJET (EN-TÊTE) :
+        - Ratio recommandé : 16:9 ou 21:9 (Bannière ou Mockup d'en-tête)
+        - Dimensions idéales : 1400 x 788 px (ou 1920 x 1080 px, min. 1200 x 675 px)
+        - Formats recommandés : WebP (optimal), JPG ou PNG
+        - Poids max conseillé : < 600 Ko pour préserver un affichage instantané
+        - Visuel conseillé : Mockup sur ordinateur portable, capture nette de tableau de bord
+        ========================================================================
+      -->
       {image && (
         <div class="project-hero-thumb">
           <img
-            src={image.startsWith('http') || image.startsWith('/') ? image : `${base}${image.replace(/^\//, '')}`}
+            src={resolveMediaUrl(image)}
             alt={`Illustration pour ${title}`}
           />
         </div>

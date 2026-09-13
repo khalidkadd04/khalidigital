@@ -1,5 +1,5 @@
 # ════════════════════════════════════════════════════════════════════
-# Configuration Decap CMS pour Astro Portfolio
+# Configuration Decap CMS / Sveltia CMS pour Astro Portfolio
 # ════════════════════════════════════════════════════════════════════
 
 # 1. Mode de connexion
@@ -36,42 +36,96 @@ collections:
     editor:
       preview: false
     fields:
-      - { label: "Titre du projet", name: "title", widget: "string" }
-      - { label: "Date de réalisation", name: "date", widget: "datetime", type: "date", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - label: "Titre du projet"
+        name: "title"
+        widget: "string"
+        hint: "Le nom principal de votre réalisation, affiché sur la carte et la page détaillée"
+
+      - label: "Date de réalisation"
+        name: "date"
+        widget: "datetime"
+        type: "date"
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        hint: "Date d'achèvement ou de publication du projet (utilisée pour le tri chronologique)"
+
       - label: "Catégorie"
         name: "category"
         widget: "select"
+        hint: "Permet de classer le projet et d'adapter automatiquement les couleurs et icônes"
         options:
           - { label: "Business Intelligence", value: "bi" }
           - { label: "Marketing Digital", value: "marketing" }
           - { label: "Analytics & Data", value: "analytics" }
           - { label: "Stratégie", value: "strategy" }
+
       - label: "Statut du projet (Optionnel)"
         name: "status"
         widget: "select"
         required: false
-        hint: "Sélectionnez le statut (Terminé, En cours...) ou laissez vide"
+        hint: "Statut d'avancement du projet. Laissez vide pour ne pas afficher de badge"
         options:
           - { label: "Terminé", value: "Terminé" }
           - { label: "En cours", value: "En cours" }
           - { label: "En phase de test", value: "En phase de test" }
           - { label: "En pause", value: "En pause" }
           - { label: "Archivé", value: "Archivé" }
-      - { label: "Mettre en avant (Featured)", name: "featured", widget: "boolean", default: false, required: false }
-      - { label: "Résumé court (affiché sur la carte)", name: "summary", widget: "string" }
-      - { label: "Description complète", name: "description", widget: "text" }
-      - { label: "Image du projet", name: "image", widget: "image", required: false }
-      - { label: "Lien externe (démo ou rapport)", name: "link", widget: "string", required: false }
-      - { label: "Technologies & Tags", name: "tags", widget: "list" }
+
+      - label: "Mettre en avant (Featured)"
+        name: "featured"
+        widget: "boolean"
+        default: false
+        required: false
+        hint: "Activez cette option pour afficher ce projet en priorité tout en haut de votre portfolio"
+
+      - label: "Résumé court (affiché sur la carte)"
+        name: "summary"
+        widget: "string"
+        hint: "Phrase accrocheuse (1 à 2 lignes) résumant la valeur ajoutée du projet sur la carte d'accueil"
+
+      - label: "Description complète"
+        name: "description"
+        widget: "text"
+        hint: "Description détaillée du contexte et des objectifs, affichée en haut de la page projet"
+
+      - label: "Image du projet"
+        name: "image"
+        widget: "image"
+        required: false
+        hint: "Capture ou maquette du projet (Recommandé: format 16:9, ex. 1280x720px, WebP ou JPG < 500 Ko)"
+
+      - label: "Lien externe (démo ou rapport)"
+        name: "link"
+        widget: "string"
+        required: false
+        hint: "Lien web vers le rapport Power BI, Tableau, démo interactive ou fichier en ligne (optionnel)"
+
+      - label: "Technologies & Tags"
+        name: "tags"
+        widget: "list"
+        hint: "Liste des outils utilisés (ex: Power BI, DAX, SQL, Google Ads, Python, Google Analytics)"
+
       - label: "Chiffres clés / Métriques (max 3)"
         name: "metrics"
         widget: "list"
         max: 3
         required: false
+        hint: "Jusqu'à 3 indicateurs d'impact quantifiables (ex: +28% de temps gagné, 4 tables, 6 KPIs)"
         fields:
-          - { label: "Valeur (ex: +28%, 4 tables, 6 KPIs)", name: "value", widget: "string" }
-          - { label: "Libellé (ex: Temps gagné, Modèle en étoile)", name: "label", widget: "string" }
-      - { label: "Étude de cas détaillée (Texte Markdown)", name: "body", widget: "markdown" }
+          - label: "Valeur (ex: +28%, 4 tables, 6 KPIs)"
+            name: "value"
+            widget: "string"
+            hint: "Le chiffre ou la statistique marquante (ex: +28%, 8.2, 4.1x)"
+          - label: "Libellé (ex: Temps gagné, Modèle en étoile)"
+            name: "label"
+            widget: "string"
+            hint: "La signification courte de cette valeur"
+
+      - label: "Étude de cas détaillée (Texte Markdown)"
+        name: "body"
+        widget: "markdown"
+        hint: "Rédigez l'étude de cas complète avec vos sous-titres (## Titre), listes, blocs de code ou captures"
 
   # ─────────────────────────────────────────────────────────────
   # COLLECTION PAGES & PARAMÈTRES DU SITE
@@ -86,48 +140,136 @@ collections:
         editor:
           preview: false
         fields:
-          - { label: "Titre du site (SEO)", name: "siteTitle", widget: "string" }
-          - { label: "Description du site (SEO)", name: "siteDescription", widget: "text" }
-          - { label: "Prénom", name: "firstName", widget: "string" }
-          - { label: "Nom de famille", name: "lastName", widget: "string" }
-          - { label: "Mot en couleur dans le titre", name: "highlightWord", widget: "string", required: false, hint: "Ex: Prénom ou Nom pour l'afficher en surbrillance" }
-          - { label: "Badge de statut (Hero)", name: "roleBadge", widget: "string" }
-          - { label: "Phrase d'accroche (Hero)", name: "tagline", widget: "text" }
+          - label: "Titre du site (SEO)"
+            name: "siteTitle"
+            widget: "string"
+            hint: "Titre principal affiché dans l'onglet du navigateur et les résultats Google"
+
+          - label: "Description du site (SEO)"
+            name: "siteDescription"
+            widget: "text"
+            hint: "Description résumée de votre profil pour le référencement (150 à 160 caractères conseillés)"
+
+          - label: "Prénom"
+            name: "firstName"
+            widget: "string"
+            hint: "Votre prénom (ex: Khalid)"
+
+          - label: "Nom de famille"
+            name: "lastName"
+            widget: "string"
+            hint: "Votre nom de famille (ex: Kaddouri)"
+
+          - label: "Mot en couleur dans le titre"
+            name: "highlightWord"
+            widget: "string"
+            required: false
+            hint: "Mot à afficher avec l'effet lumineux violet dans le grand titre (ex: Kaddouri ou Khalid)"
+
+          - label: "Badge de statut (Hero)"
+            name: "roleBadge"
+            widget: "string"
+            hint: "Pastille située juste au-dessus de votre nom (ex: Diplômé — Marketing Digital & BI)"
+
+          - label: "Phrase d'accroche (Hero)"
+            name: "tagline"
+            widget: "text"
+            hint: "Phrase principale sous votre nom décrivant votre mission et valeur ajoutée professionnelle"
+
           - label: "Badges du Hero"
             name: "heroPills"
             widget: "list"
+            hint: "Pastilles de vos compétences clés affichées sous votre phrase d'accroche"
             fields:
-              - { label: "Texte du badge", name: "text", widget: "string" }
+              - label: "Texte du badge"
+                name: "text"
+                widget: "string"
+                hint: "Intitulé du badge (ex: Business Intelligence, Data Analytics)"
               - label: "Couleur"
                 name: "color"
                 widget: "select"
                 default: "default"
+                hint: "Couleur visuelle de la pastille"
                 options:
                   - { label: "Standard (Gris sombre)", value: "default" }
                   - { label: "Violet", value: "violet" }
                   - { label: "Turquoise (Teal)", value: "teal" }
                   - { label: "Ambre (Orange)", value: "amber" }
-          - { label: "Photo de profil", name: "avatar", widget: "image", required: false }
-          - { label: "CV (Fichier PDF)", name: "cvFile", widget: "file", required: false }
-          - { label: "Titre de la section À propos", name: "aboutTitle", widget: "string" }
-          - { label: "Sous-titre / Diplôme À propos", name: "aboutDiploma", widget: "string" }
-          - { label: "Biographie / Présentation", name: "aboutBio", widget: "markdown" }
+
+          - label: "Photo de profil"
+            name: "avatar"
+            widget: "image"
+            required: false
+            hint: "Photo pour la section À propos (Recommandé: format carré 1:1, ex. 600x600px, WebP ou JPG < 300 Ko)"
+
+          - label: "CV (Fichier PDF)"
+            name: "cvFile"
+            widget: "file"
+            required: false
+            hint: "Téléversez votre CV au format PDF pour permettre son téléchargement par les recruteurs"
+
+          - label: "Titre de la section À propos"
+            name: "aboutTitle"
+            widget: "string"
+            hint: "Titre principal de la section présentation (ex: À propos de moi ou Allier la data à la stratégie)"
+
+          - label: "Sous-titre / Diplôme À propos"
+            name: "aboutDiploma"
+            widget: "string"
+            hint: "Diplôme principal mis en valeur (ex: 🎓 Diplômé en Marketing Digital & Intelligence des Affaires — 2025)"
+
+          - label: "Biographie / Présentation"
+            name: "aboutBio"
+            widget: "markdown"
+            hint: "Votre présentation détaillée rédigée en Markdown (mettez en gras **mots clés** pour du relief)"
+
           - label: "Statistiques en chiffres (À propos)"
             name: "stats"
             widget: "list"
+            hint: "Indicateurs chiffrés de votre parcours (ex: 10+ Projets, 6 Certifications, Bac+5 Niveau)"
             fields:
-              - { label: "Chiffre / Valeur (ex: 10+, Bac+5)", name: "value", widget: "string" }
-              - { label: "Libellé (ex: Projets réalisés, Niveau)", name: "label", widget: "string" }
+              - label: "Chiffre / Valeur (ex: 10+, Bac+5)"
+                name: "value"
+                widget: "string"
+                hint: "Le chiffre marquant (ex: 10+, 6, Bac+5)"
+              - label: "Libellé (ex: Projets réalisés, Niveau)"
+                name: "label"
+                widget: "string"
+                hint: "La description courte de ce chiffre"
+
           - label: "Coordonnées & Réseaux"
             name: "contact"
             widget: "object"
+            hint: "Vos canaux de communication et réseaux sociaux professionnels"
             fields:
-              - { label: "Adresse Email", name: "email", widget: "string" }
-              - { label: "Statut de disponibilité", name: "availability", widget: "string" }
-              - { label: "Lien LinkedIn", name: "linkedin", widget: "string", required: false }
-              - { label: "Lien Behance", name: "behance", widget: "string", required: false }
-              - { label: "Lien Twitter / X", name: "twitter", widget: "string", required: false }
-              - { label: "Lien GitHub", name: "github", widget: "string", required: false }
+              - label: "Adresse Email"
+                name: "email"
+                widget: "string"
+                hint: "Adresse email où recevoir les opportunités et messages"
+              - label: "Statut de disponibilité"
+                name: "availability"
+                widget: "string"
+                hint: "Disponibilité affichée aux recruteurs (ex: Disponible dès maintenant)"
+              - label: "Lien LinkedIn"
+                name: "linkedin"
+                widget: "string"
+                required: false
+                hint: "URL complète de votre profil LinkedIn (ex: https://www.linkedin.com/in/...)"
+              - label: "Lien Behance"
+                name: "behance"
+                widget: "string"
+                required: false
+                hint: "URL de votre portfolio Behance (optionnel)"
+              - label: "Lien Twitter / X"
+                name: "twitter"
+                widget: "string"
+                required: false
+                hint: "URL de votre compte X / Twitter (optionnel)"
+              - label: "Lien GitHub"
+                name: "github"
+                widget: "string"
+                required: false
+                hint: "URL de votre profil GitHub (optionnel)"
 
       # Fichier 2 : Compétences
       - file: "src/content/data/skills.json"
@@ -139,13 +281,21 @@ collections:
           - label: "Groupes de compétences"
             name: "groups"
             widget: "list"
+            hint: "Catégories regroupant vos outils et compétences (ex: Business Intelligence, Marketing...)"
             fields:
-              - { label: "Titre du groupe", name: "title", widget: "string" }
-              - { label: "Icône (Emoji)", name: "icon", widget: "string" }
+              - label: "Titre du groupe"
+                name: "title"
+                widget: "string"
+                hint: "Nom de la catégorie (ex: Business Intelligence & Data)"
+              - label: "Icône (Emoji)"
+                name: "icon"
+                widget: "string"
+                hint: "Émoji illustratif du domaine (ex: 📊, 🎯, 🔍, 📱)"
               - label: "Couleur d'accentuation"
                 name: "color"
                 widget: "select"
                 default: "v"
+                hint: "Couleur des barres de niveau (v = Violet, t = Turquoise, a = Ambre)"
                 options:
                   - { label: "Violet", value: "v" }
                   - { label: "Turquoise (Teal)", value: "t" }
@@ -153,9 +303,19 @@ collections:
               - label: "Compétences"
                 name: "skills"
                 widget: "list"
+                hint: "Liste des outils ou expertises de ce groupe"
                 fields:
-                  - { label: "Nom de la compétence", name: "name", widget: "string" }
-                  - { label: "Niveau de maîtrise (0 à 100 %)", name: "level", widget: "number", value_type: "int", min: 0, max: 100 }
+                  - label: "Nom de la compétence"
+                    name: "name"
+                    widget: "string"
+                    hint: "Nom de l'outil ou compétence (ex: Power BI, SQL, Google Ads)"
+                  - label: "Niveau de maîtrise (0 à 100 %)"
+                    name: "level"
+                    widget: "number"
+                    value_type: "int"
+                    min: 0
+                    max: 100
+                    hint: "Pourcentage définissant la largeur de la barre animée (de 0 à 100)"
 
       # Fichier 3 : Certifications
       - file: "src/content/data/certifications.json"
@@ -167,9 +327,27 @@ collections:
           - label: "Certifications"
             name: "items"
             widget: "list"
+            hint: "Liste de vos accréditations, certifications d'éditeurs et diplômes obtenus"
             fields:
-              - { label: "Intitulé de la certification", name: "name", widget: "string" }
-              - { label: "Organisme émetteur (ex: Google, Microsoft)", name: "issuer", widget: "string" }
-              - { label: "Année d'obtention", name: "year", widget: "string" }
-              - { label: "Icône (Emoji)", name: "icon", widget: "string", default: "🎓" }
-              - { label: "Lien de vérification (optionnel)", name: "link", widget: "string", required: false }
+              - label: "Intitulé de la certification"
+                name: "name"
+                widget: "string"
+                hint: "Titre complet de la certification (ex: Power BI Data Analyst Associate)"
+              - label: "Organisme émetteur (ex: Google, Microsoft)"
+                name: "issuer"
+                widget: "string"
+                hint: "L'institution qui a délivré la certification (ex: Microsoft, Google, HubSpot)"
+              - label: "Année d'obtention"
+                name: "year"
+                widget: "string"
+                hint: "Année d'obtention (ex: 2025)"
+              - label: "Icône (Emoji)"
+                name: "icon"
+                widget: "string"
+                default: "🎓"
+                hint: "Émoji représentatif (ex: 🎓, 🏆, 📜, 🥇)"
+              - label: "Lien de vérification (optionnel)"
+                name: "link"
+                widget: "string"
+                required: false
+                hint: "Lien vers l'attestation numérique ou le badge de vérification (optionnel)"

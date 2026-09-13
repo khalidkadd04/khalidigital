@@ -5,10 +5,22 @@
       "icon": "📣",
       "color": "v",
       "skills": [
-        { "name": "SEO / SEA", "level": 82 },
-        { "name": "Social Media Ads", "level": 78 },
-        { "name": "Email Marketing", "level": 75 },
-        { "name": "Content Marketing", "level": 80 }
+        {
+          "name": "SEO / SEA",
+          "level": 82
+        },
+        {
+          "name": "Social Media Ads",
+          "level": 78
+        },
+        {
+          "name": "Email Marketing",
+          "level": 75
+        },
+        {
+          "name": "Content Marketing",
+          "level": 80
+        }
       ]
     },
     {
@@ -16,10 +28,22 @@
       "icon": "📊",
       "color": "t",
       "skills": [
-        { "name": "Power BI", "level": 80 },
-        { "name": "Tableau", "level": 72 },
-        { "name": "SQL", "level": 70 },
-        { "name": "Google Data Studio", "level": 85 }
+        {
+          "name": "Power BI",
+          "level": 80
+        },
+        {
+          "name": "Tableau",
+          "level": 72
+        },
+        {
+          "name": "SQL",
+          "level": 70
+        },
+        {
+          "name": "Google Data Studio",
+          "level": 85
+        }
       ]
     },
     {
@@ -27,10 +51,22 @@
       "icon": "📈",
       "color": "a",
       "skills": [
-        { "name": "Google Analytics 4", "level": 88 },
-        { "name": "Google Tag Manager", "level": 74 },
-        { "name": "Excel avancé", "level": 82 },
-        { "name": "Python (pandas)", "level": 60 }
+        {
+          "name": "Google Analytics 4",
+          "level": 88
+        },
+        {
+          "name": "Google Tag Manager",
+          "level": 74
+        },
+        {
+          "name": "Excel avancé",
+          "level": 82
+        },
+        {
+          "name": "Python (pandas)",
+          "level": 60
+        }
       ]
     },
     {
@@ -38,10 +74,37 @@
       "icon": "🛠️",
       "color": "v",
       "skills": [
-        { "name": "Semrush / Ahrefs", "level": 76 },
-        { "name": "HubSpot / CRM", "level": 70 },
-        { "name": "Meta Ads Manager", "level": 78 },
-        { "name": "Canva / Figma", "level": 72 }
+        {
+          "name": "Semrush / Ahrefs",
+          "level": 76
+        },
+        {
+          "name": "HubSpot / CRM",
+          "level": 70
+        },
+        {
+          "name": "Meta Ads Manager",
+          "level": 78
+        },
+        {
+          "name": "Canva / Figma",
+          "level": 72
+        }
+      ]
+    },
+    {
+      "title": "Soft Skills",
+      "icon": "💫",
+      "color": "v",
+      "skills": [
+        {
+          "name": "Clickup",
+          "level": 100
+        },
+        {
+          "name": "Notion",
+          "level": 50
+        }
       ]
     }
   ]

@@ -1,0 +1,162 @@
+# ════════════════════════════════════════════════════════════════════
+# Configuration Decap CMS pour Astro Portfolio
+# ════════════════════════════════════════════════════════════════════
+
+# 1. Mode de connexion
+backend:
+  name: github
+  repo: VOTRE_PSEUDO/my-portfolio # Remplacer par votre pseudo GitHub / nom du repo
+  branch: main
+
+# Active l'édition locale sans mot de passe via 'npm run cms'
+local_backend: true
+
+# 2. Gestion des fichiers médias (images, CV, documents)
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+# 3. Langue de l'interface
+locale: "fr"
+
+# 4. Définition des collections de contenu
+collections:
+  # ─────────────────────────────────────────────────────────────
+  # COLLECTION PROJETS (Articles Markdown dans src/content/projects)
+  # ─────────────────────────────────────────────────────────────
+  - name: "projects"
+    label: "Projets"
+    label_singular: "Projet"
+    folder: "src/content/projects"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    editor:
+      preview: false
+    fields:
+      - { label: "Titre du projet", name: "title", widget: "string" }
+      - { label: "Date de réalisation", name: "date", widget: "date", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD" }
+      - label: "Catégorie"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Business Intelligence", value: "bi" }
+          - { label: "Marketing Digital", value: "marketing" }
+          - { label: "Analytics & Data", value: "analytics" }
+          - { label: "Stratégie", value: "strategy" }
+      - { label: "Mettre en avant (Featured)", name: "featured", widget: "boolean", default: false, required: false }
+      - { label: "Résumé court (affiché sur la carte)", name: "summary", widget: "string" }
+      - { label: "Description complète", name: "description", widget: "text" }
+      - { label: "Image du projet", name: "image", widget: "image", required: false }
+      - { label: "Lien externe (démo ou rapport)", name: "link", widget: "string", required: false }
+      - { label: "Technologies & Tags", name: "tags", widget: "list" }
+      - label: "Chiffres clés / Métriques (max 3)"
+        name: "metrics"
+        widget: "list"
+        max: 3
+        required: false
+        fields:
+          - { label: "Valeur (ex: +28%, 4 tables, 6 KPIs)", name: "value", widget: "string" }
+          - { label: "Libellé (ex: Temps gagné, Modèle en étoile)", name: "label", widget: "string" }
+      - { label: "Étude de cas détaillée (Texte Markdown)", name: "body", widget: "markdown" }
+
+  # ─────────────────────────────────────────────────────────────
+  # COLLECTION PAGES & PARAMÈTRES DU SITE
+  # ─────────────────────────────────────────────────────────────
+  - name: "settings"
+    label: "Contenus du site"
+    files:
+      # Fichier 1 : Profil, Textes & Contact
+      - file: "src/content/data/profile.json"
+        label: "Profil, Textes & Contact"
+        name: "profile"
+        editor:
+          preview: false
+        fields:
+          - { label: "Titre du site (SEO)", name: "siteTitle", widget: "string" }
+          - { label: "Description du site (SEO)", name: "siteDescription", widget: "text" }
+          - { label: "Prénom", name: "firstName", widget: "string" }
+          - { label: "Nom de famille", name: "lastName", widget: "string" }
+          - { label: "Mot en couleur dans le titre", name: "highlightWord", widget: "string", required: false, hint: "Ex: Prénom ou Nom pour l'afficher en surbrillance" }
+          - { label: "Badge de statut (Hero)", name: "roleBadge", widget: "string" }
+          - { label: "Phrase d'accroche (Hero)", name: "tagline", widget: "text" }
+          - label: "Badges du Hero"
+            name: "heroPills"
+            widget: "list"
+            fields:
+              - { label: "Texte du badge", name: "text", widget: "string" }
+              - label: "Couleur"
+                name: "color"
+                widget: "select"
+                default: "default"
+                options:
+                  - { label: "Standard (Gris sombre)", value: "default" }
+                  - { label: "Violet", value: "violet" }
+                  - { label: "Turquoise (Teal)", value: "teal" }
+                  - { label: "Ambre (Orange)", value: "amber" }
+          - { label: "Photo de profil", name: "avatar", widget: "image", required: false }
+          - { label: "CV (Fichier PDF)", name: "cvFile", widget: "file", required: false }
+          - { label: "Titre de la section À propos", name: "aboutTitle", widget: "string" }
+          - { label: "Sous-titre / Diplôme À propos", name: "aboutDiploma", widget: "string" }
+          - { label: "Biographie / Présentation", name: "aboutBio", widget: "markdown" }
+          - label: "Statistiques en chiffres (À propos)"
+            name: "stats"
+            widget: "list"
+            fields:
+              - { label: "Chiffre / Valeur (ex: 10+, Bac+5)", name: "value", widget: "string" }
+              - { label: "Libellé (ex: Projets réalisés, Niveau)", name: "label", widget: "string" }
+          - label: "Coordonnées & Réseaux"
+            name: "contact"
+            widget: "object"
+            fields:
+              - { label: "Adresse Email", name: "email", widget: "string" }
+              - { label: "Statut de disponibilité", name: "availability", widget: "string" }
+              - { label: "Lien LinkedIn", name: "linkedin", widget: "string", required: false }
+              - { label: "Lien Behance", name: "behance", widget: "string", required: false }
+              - { label: "Lien Twitter / X", name: "twitter", widget: "string", required: false }
+              - { label: "Lien GitHub", name: "github", widget: "string", required: false }
+
+      # Fichier 2 : Compétences
+      - file: "src/content/data/skills.json"
+        label: "Compétences & Outils"
+        name: "skills"
+        editor:
+          preview: false
+        fields:
+          - label: "Groupes de compétences"
+            name: "groups"
+            widget: "list"
+            fields:
+              - { label: "Titre du groupe", name: "title", widget: "string" }
+              - { label: "Icône (Emoji)", name: "icon", widget: "string" }
+              - label: "Couleur d'accentuation"
+                name: "color"
+                widget: "select"
+                default: "v"
+                options:
+                  - { label: "Violet", value: "v" }
+                  - { label: "Turquoise (Teal)", value: "t" }
+                  - { label: "Ambre (Orange)", value: "a" }
+              - label: "Compétences"
+                name: "skills"
+                widget: "list"
+                fields:
+                  - { label: "Nom de la compétence", name: "name", widget: "string" }
+                  - { label: "Niveau de maîtrise (0 à 100 %)", name: "level", widget: "number", value_type: "int", min: 0, max: 100 }
+
+      # Fichier 3 : Certifications
+      - file: "src/content/data/certifications.json"
+        label: "Certifications & Diplômes"
+        name: "certifications"
+        editor:
+          preview: false
+        fields:
+          - label: "Certifications"
+            name: "items"
+            widget: "list"
+            fields:
+              - { label: "Intitulé de la certification", name: "name", widget: "string" }
+              - { label: "Organisme émetteur (ex: Google, Microsoft)", name: "issuer", widget: "string" }
+              - { label: "Année d'obtention", name: "year", widget: "string" }
+              - { label: "Icône (Emoji)", name: "icon", widget: "string", default: "🎓" }
+              - { label: "Lien de vérification (optionnel)", name: "link", widget: "string", required: false }

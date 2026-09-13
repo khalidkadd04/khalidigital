@@ -1,0 +1,607 @@
+---
+/**
+ * Contact.astro
+ * ─────────────────────────────────────────────────────────────────
+ * Contact section with:
+ *   • Info column (email, availability, social links)
+ *   • Google Forms integration via hidden <iframe> technique
+ *     (compatible with GitHub Pages Content Security Policy)
+ *
+ * SETUP:
+ *   1. Replace GOOGLE_FORM_ACTION with your own form's /formResponse URL.
+ *   2. Replace the entry.XXXXXXXXX name attributes with your field IDs
+ *      (get them from your Google Form's pre-fill link).
+ *   3. Update email and social links below.
+ *
+ * Props:
+ *   email        — your contact email
+ *   linkedinUrl  — LinkedIn profile URL
+ *   behanceUrl   — Behance profile URL (optional)
+ *   githubUrl    — GitHub profile URL (optional)
+ *   twitterUrl   — X/Twitter URL (optional)
+ */
+
+interface Props {
+  email?:       string;
+  linkedinUrl?: string;
+  behanceUrl?:  string;
+  githubUrl?:   string;
+  twitterUrl?:  string;
+}
+
+const {
+  email       = 'votre@email.com',
+  linkedinUrl = 'https://linkedin.com/in/votre-profil',
+  behanceUrl  = 'https://behance.net/votre-profil',
+  githubUrl   = 'https://github.com/votre-pseudo',
+  twitterUrl  = 'https://x.com/votre-pseudo',
+} = Astro.props;
+
+// ✏️ Replace with your own Google Form /formResponse URL
+const GOOGLE_FORM_ACTION =
+  'https://docs.google.com/forms/d/e/1FAIpQLSehKkuGqamQNJUWh08raSZae03a0vpGZWZqAgzODG_RPm1v_Q/formResponse';
+---
+
+<section id="contact" class="contact-section" aria-labelledby="contact-heading">
+
+  <div class="contact-header">
+    <h2 id="contact-heading" class="section-title">Let's work together</h2>
+    <p class="section-sub">
+      Open to internships, junior roles, and freelance projects.
+      Reach out and I'll reply within 48 hours.
+    </p>
+  </div>
+
+  <div class="contact-layout">
+
+    <!-- ── Info column ── -->
+    <aside class="contact-info" aria-label="Contact information">
+
+      <div class="info-block">
+        <span class="info-label">Email</span>
+        <a href={`mailto:${email}`} class="info-email">{email}</a>
+      </div>
+
+      <div class="info-block">
+        <span class="info-label">Availability</span>
+        <div class="avail-row">
+          <span class="avail-dot" aria-hidden="true"></span>
+          <span class="avail-text">Open to opportunities now</span>
+        </div>
+      </div>
+
+      <div class="info-block">
+        <span class="info-label">Find me on</span>
+        <ul class="social-list" aria-label="Social links">
+
+          <li>
+            <a href={linkedinUrl} class="social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
+                <rect x="2" y="9" width="4" height="12"/>
+                <circle cx="4" cy="4" r="2"/>
+              </svg>
+              LinkedIn
+            </a>
+          </li>
+
+          {behanceUrl && (
+            <li>
+              <a href={behanceUrl} class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Behance">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 3.211 3.483 3.312 4.588 2.029H23.7zm-7.249-4h4.556c-.016-1.08-.703-1.99-2.275-1.99-1.533 0-2.18.906-2.281 1.99zm-5.326 6.613c-.828 0-1.69-.153-2.286-.76-.604-.616-.948-1.554-.948-2.869 0-2.621 1.531-3.706 3.309-3.706.96 0 1.676.185 2.218.621V6H2v14h10.9c-.354-.394-.654-.843-.849-1.387zm-3.099-6.042c-.684 0-1.219.492-1.219 1.543 0 1.027.451 1.615 1.219 1.615.816 0 1.246-.626 1.246-1.615 0-.985-.441-1.543-1.246-1.543z"/>
+                </svg>
+                Behance
+              </a>
+            </li>
+          )}
+
+          {twitterUrl && (
+            <li>
+              <a href={twitterUrl} class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Twitter / X
+              </a>
+            </li>
+          )}
+
+          {githubUrl && (
+            <li>
+              <a href={githubUrl} class="social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                </svg>
+                GitHub
+              </a>
+            </li>
+          )}
+
+        </ul>
+      </div>
+
+    </aside>
+
+    <!-- ── Form column ── -->
+    <div class="form-wrap">
+      <p class="form-title">Send a message</p>
+
+      <!--
+        FORM — submits via hidden iframe (GitHub Pages compatible).
+        action  = Google Forms /formResponse URL
+        target  = points to the hidden iframe below
+        method  = POST (required by Google Forms)
+        name="" = the entry.XXXXXXXX values map to your Google Form fields
+      -->
+      <form
+        id="contact-form"
+        action={GOOGLE_FORM_ACTION}
+        method="POST"
+        target="hidden-iframe"
+        novalidate
+        aria-label="Contact form"
+      >
+
+        <!-- Row 1: Name + Email -->
+        <div class="form-row two-col">
+
+          <div class="form-field">
+            <label class="form-label" for="f-nom">
+              Full name <span class="req" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="f-nom"
+              name="entry.397367347"
+              type="text"
+              class="form-input"
+              placeholder="Jean Dupont"
+              autocomplete="name"
+              required
+              aria-required="true"
+              aria-describedby="err-nom"
+            />
+            <span class="form-error" id="err-nom" role="alert" aria-live="polite">Required.</span>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="f-email">
+              Email <span class="req" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="f-email"
+              name="entry.2131490758"
+              type="email"
+              class="form-input"
+              placeholder="jean@example.com"
+              autocomplete="email"
+              required
+              aria-required="true"
+              aria-describedby="err-email"
+            />
+            <span class="form-error" id="err-email" role="alert" aria-live="polite">Valid email required.</span>
+          </div>
+
+        </div>
+
+        <!-- Row 2: Phone + Subject -->
+        <div class="form-row two-col">
+
+          <div class="form-field">
+            <label class="form-label" for="f-tel">Phone <span class="opt">(optional)</span></label>
+            <input
+              id="f-tel"
+              name="entry.251448844"
+              type="tel"
+              class="form-input"
+              placeholder="+212 6XX XXX XXX"
+              autocomplete="tel"
+            />
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="f-sujet">
+              Subject <span class="req" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="f-sujet"
+              name="entry.1433315990"
+              type="text"
+              class="form-input"
+              placeholder="Internship opportunity…"
+              required
+              aria-required="true"
+              aria-describedby="err-sujet"
+            />
+            <span class="form-error" id="err-sujet" role="alert" aria-live="polite">Required.</span>
+          </div>
+
+        </div>
+
+        <!-- Row 3: Message -->
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label" for="f-message">
+              Message <span class="req" aria-hidden="true">*</span>
+            </label>
+            <textarea
+              id="f-message"
+              name="entry.1477641668"
+              class="form-textarea"
+              placeholder="Hello, I'm reaching out about…"
+              rows="5"
+              required
+              aria-required="true"
+              aria-describedby="err-message"
+            ></textarea>
+            <span class="form-error" id="err-message" role="alert" aria-live="polite">Required.</span>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="form-submit" id="form-btn">
+          <span id="btn-label">Send message</span>
+          <div class="btn-spinner" id="btn-spinner" aria-hidden="true"></div>
+          <svg id="btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path d="M22 2L11 13"/>
+            <path d="M22 2L15 22l-4-9-9-4 20-7z"/>
+          </svg>
+        </button>
+
+        <!-- Status messages -->
+        <div class="form-status success" id="form-ok" role="status" aria-live="polite">
+          ✅ Message sent! I'll be in touch within 48 hours.
+        </div>
+        <div class="form-status error" id="form-err" role="alert" aria-live="polite">
+          ❌ Please correct the errors above before sending.
+        </div>
+
+      </form>
+
+      <!--
+        HIDDEN IFRAME — receives the Google Forms response silently.
+        The form's target="hidden-iframe" directs the POST response here
+        instead of navigating the page. The iframe's "load" event fires
+        after Google processes the submission — we use it to show success.
+      -->
+      <iframe
+        id="hidden-iframe"
+        name="hidden-iframe"
+        title="Form submission target"
+        style="display:none;"
+        aria-hidden="true"
+      ></iframe>
+
+    </div><!-- /.form-wrap -->
+
+  </div><!-- /.contact-layout -->
+
+  <!-- Footer strip -->
+  <div class="contact-footer">
+    <p class="footer-copy">© {new Date().getFullYear()} Your Name. Built with Astro. Hosted on GitHub Pages.</p>
+  </div>
+
+</section>
+
+<style>
+  .contact-section {
+    padding: var(--space-24) var(--space-6) var(--space-16);
+    border-top: 1px solid var(--ink-border);
+  }
+  @media (min-width: 1024px) { .contact-section { padding-inline: var(--space-16); } }
+
+  .contact-header {
+    margin-bottom: var(--space-12);
+    max-width: 560px;
+  }
+  .section-title {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--sand);
+    margin-bottom: var(--space-3);
+  }
+  .section-sub {
+    font-size: var(--text-lg);
+    color: var(--sand-dim);
+    line-height: 1.65;
+  }
+
+  /* Two-column layout */
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+  }
+  @media (min-width: 768px) {
+    .contact-layout { grid-template-columns: 240px 1fr; gap: var(--space-12); align-items: start; }
+  }
+
+  /* Info column */
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+  .info-block { display: flex; flex-direction: column; gap: var(--space-2); }
+  .info-label {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sand-dim);
+  }
+  .info-email {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--sand);
+    border-bottom: 1.5px solid var(--indigo);
+    padding-bottom: 2px;
+    width: fit-content;
+    transition: color var(--t-fast), border-color var(--t-fast);
+    word-break: break-all;
+  }
+  .info-email:hover { color: var(--indigo); border-color: var(--teal); }
+
+  .avail-row { display: flex; align-items: center; gap: var(--space-2); }
+  .avail-text { font-size: var(--text-sm); color: var(--sand-dim); }
+
+  /* Social links */
+  .social-list { display: flex; flex-direction: column; gap: var(--space-2); }
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--sand-dim);
+    transition: color var(--t-fast);
+    width: fit-content;
+  }
+  .social-link:hover { color: var(--sand); }
+
+  /* Form card */
+  .form-wrap {
+    background: var(--ink-raised);
+    border: 1px solid var(--ink-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+  }
+  .form-title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--sand);
+    margin-bottom: var(--space-6);
+  }
+
+  /* Form grid rows */
+  .form-row { margin-bottom: var(--space-4); }
+  .two-col { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+  @media (min-width: 480px) { .two-col { grid-template-columns: 1fr 1fr; } }
+
+  /* Field */
+  .form-field { display: flex; flex-direction: column; gap: var(--space-1); }
+  .form-label {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--sand-dim);
+  }
+  .req { color: var(--indigo); margin-left: 2px; }
+  .opt { font-weight: 400; font-style: italic; color: var(--sand-dim); text-transform: none; letter-spacing: 0; font-family: var(--font-body); }
+
+  /* Inputs */
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--ink-border);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 0.9rem;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--sand);
+    outline: none;
+    transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+    -webkit-appearance: none;
+  }
+  .form-input::placeholder,
+  .form-textarea::placeholder { color: var(--sand-dim); opacity: 0.5; }
+  .form-input:focus,
+  .form-textarea:focus {
+    border-color: var(--indigo);
+    background: rgba(91,107,248,0.04);
+    box-shadow: 0 0 0 3px rgba(91,107,248,0.14);
+  }
+  .form-input.invalid,
+  .form-textarea.invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(248,113,113,0.14);
+  }
+  .form-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+
+  /* Error messages */
+  .form-error {
+    font-size: var(--text-xs);
+    color: var(--danger);
+    display: none;
+    margin-top: 2px;
+  }
+
+  /* Submit button */
+  .form-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    width: 100%;
+    margin-top: var(--space-6);
+    padding: 0.85rem 1.5rem;
+    background: var(--indigo);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background var(--t-fast), transform var(--t-fast), box-shadow var(--t);
+  }
+  .form-submit:hover:not(:disabled) {
+    background: #6e7df9;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(91,107,248,0.3);
+  }
+  .form-submit:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  /* Spinner */
+  .btn-spinner {
+    width: 15px; height: 15px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Status banners */
+  .form-status {
+    display: none;
+    margin-top: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-align: center;
+  }
+  .form-status.success {
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    color: #4ade80;
+  }
+  .form-status.error {
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.2);
+    color: var(--danger);
+  }
+
+  /* Footer */
+  .contact-footer {
+    margin-top: var(--space-16);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--ink-border);
+  }
+  .footer-copy {
+    font-size: var(--text-xs);
+    color: var(--sand-dim);
+    max-width: none;
+  }
+</style>
+
+<script>
+  (function () {
+    const form    = document.getElementById('contact-form') as HTMLFormElement;
+    const btn     = document.getElementById('form-btn') as HTMLButtonElement;
+    const label   = document.getElementById('btn-label') as HTMLSpanElement;
+    const spinner = document.getElementById('btn-spinner') as HTMLDivElement;
+    const icon    = document.getElementById('btn-icon') as SVGElement;
+    const okMsg   = document.getElementById('form-ok') as HTMLDivElement;
+    const errMsg  = document.getElementById('form-err') as HTMLDivElement;
+    const iframe  = document.getElementById('hidden-iframe') as HTMLIFrameElement;
+
+    // Track whether a form submission is in flight
+    let submitted = false;
+
+    /** Validate one field. Returns true if valid. */
+    function validateField(
+      input: HTMLInputElement | HTMLTextAreaElement,
+      errId: string,
+      checkEmail = false
+    ): boolean {
+      const err = document.getElementById(errId);
+      let valid = true;
+
+      if (input.required && !input.value.trim()) {
+        valid = false;
+      } else if (checkEmail && input.value.trim()) {
+        valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+      }
+
+      input.classList.toggle('invalid', !valid);
+      if (err) err.style.display = valid ? 'none' : 'block';
+      return valid;
+    }
+
+    // Live validation on blur
+    const nom     = document.getElementById('f-nom')     as HTMLInputElement;
+    const email   = document.getElementById('f-email')   as HTMLInputElement;
+    const sujet   = document.getElementById('f-sujet')   as HTMLInputElement;
+    const message = document.getElementById('f-message') as HTMLTextAreaElement;
+
+    nom    .addEventListener('blur', () => validateField(nom,     'err-nom',     false));
+    email  .addEventListener('blur', () => validateField(email,   'err-email',   true));
+    sujet  .addEventListener('blur', () => validateField(sujet,   'err-sujet',   false));
+    message.addEventListener('blur', () => validateField(message, 'err-message', false));
+
+    // Form submit handler
+    form.addEventListener('submit', (e) => {
+      // Run full validation
+      const v1 = validateField(nom,     'err-nom',     false);
+      const v2 = validateField(email,   'err-email',   true);
+      const v3 = validateField(sujet,   'err-sujet',   false);
+      const v4 = validateField(message, 'err-message', false);
+
+      if (!v1 || !v2 || !v3 || !v4) {
+        // Block submission and show error banner
+        e.preventDefault();
+        errMsg.style.display = 'block';
+        okMsg.style.display  = 'none';
+        return;
+      }
+
+      // All valid — let the form POST to Google via the iframe
+      okMsg.style.display  = 'none';
+      errMsg.style.display = 'none';
+
+      // Switch button to loading state
+      btn.disabled         = true;
+      label.textContent    = 'Sending…';
+      spinner.style.display = 'block';
+      icon.style.display    = 'none';
+
+      submitted = true;
+      // Note: we do NOT call e.preventDefault() here —
+      // the native form POST to the hidden iframe proceeds.
+    });
+
+    // Detect Google's response via the iframe load event
+    iframe.addEventListener('load', () => {
+      if (!submitted) return; // ignore initial empty load
+      submitted = false;
+
+      // Show success
+      okMsg.style.display = 'block';
+      form.reset();
+      form.querySelectorAll<HTMLElement>('.form-input, .form-textarea').forEach((el) => {
+        el.classList.remove('invalid');
+      });
+      form.querySelectorAll<HTMLElement>('.form-error').forEach((el) => {
+        el.style.display = 'none';
+      });
+
+      // Reset button
+      btn.disabled          = false;
+      label.textContent     = 'Send message';
+      spinner.style.display = 'none';
+      icon.style.display    = 'block';
+    });
+  })();
+</script>

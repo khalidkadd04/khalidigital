@@ -1,0 +1,397 @@
+---
+/**
+ * BaseLayout.astro
+ * ─────────────────────────────────────────────────────────────────
+ * Wraps every page. Provides:
+ *   • <head> with SEO meta, fonts, global CSS
+ *   • Left-rail sticky nav on desktop (≥1024px)
+ *   • Top hamburger nav on mobile
+ *   • <main> slot for page content
+ *   • Skip-to-content link for accessibility
+ *
+ * Props:
+ *   title       — <title> tag value
+ *   description — meta description
+ */
+
+import '../styles/global.css';
+import profile from '../content/data/profile.json';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = profile.siteTitle || 'Portfolio — Marketing Digital & Business Intelligence',
+  description = profile.siteDescription || 'Portfolio Marketing Digital et Business Intelligence.',
+} = Astro.props;
+
+// Resolve the base URL so nav links work on GitHub Pages subdirectory deploys
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
+const initials = `${profile.firstName?.[0] || 'V'}${profile.lastName?.[0] || 'N'}`;
+
+const navItems = [
+  { href: `${base}#about`,      label: 'À propos'     },
+  { href: `${base}#projects`,   label: 'Projets'      },
+  { href: `${base}#skills`,     label: 'Compétences'  },
+  { href: `${base}#certs`,      label: 'Certifications' },
+  { href: `${base}#contact`,    label: 'Contact'      },
+];
+---
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type"        content="website" />
+
+  <!-- Favicon (replace with your own in /public) -->
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+</head>
+
+<body>
+
+  <!-- Skip to main content for keyboard users -->
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <!-- ══════════════════════════════════════════
+       DESKTOP SIDEBAR NAV (≥1024px)
+  ══════════════════════════════════════════ -->
+  <aside class="sidebar" aria-label="Site navigation">
+    <div class="sidebar-inner">
+
+      <!-- Monogram / logo mark -->
+      <a href={`${base}#hero`} class="sidebar-logo" aria-label="Retour à l'accueil">
+        <span>{initials}</span>
+        <span class="sidebar-logo-dot">.</span>
+      </a>
+
+      <nav class="sidebar-nav" aria-label="Primary navigation">
+        <ul>
+          {navItems.map(({ href, label }) => (
+            <li>
+              <a href={href} class="sidebar-link">
+                <span class="sidebar-link-line" aria-hidden="true"></span>
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- Availability indicator at bottom of sidebar -->
+      <div class="sidebar-avail">
+        <span class="avail-dot" aria-hidden="true"></span>
+        <span>{profile.contact.availability}</span>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════
+       MOBILE TOP NAV (<1024px)
+  ══════════════════════════════════════════ -->
+  <header class="mobile-nav" aria-label="Mobile navigation">
+    <a href={`${base}#hero`} class="mobile-logo" aria-label="Retour à l'accueil">
+      {initials}<span class="sidebar-logo-dot">.</span>
+    </a>
+
+    <button
+      class="hamburger"
+      id="hamburger"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="mobile-drawer"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <!-- Mobile drawer overlay -->
+  <div class="mobile-drawer" id="mobile-drawer" aria-hidden="true" role="dialog" aria-label="Navigation menu">
+    <nav>
+      <ul>
+        {navItems.map(({ href, label }) => (
+          <li>
+            <a href={href} class="drawer-link">{label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════════ -->
+  <main id="main-content" class="main-content">
+    <slot />
+  </main>
+
+</body>
+</html>
+
+<style is:global>
+  /* ── Layout shell ─────────────────────────────────────────── */
+  body {
+    display: flex;
+    min-height: 100svh;
+  }
+
+  /* Skip link */
+  .skip-link {
+    position: fixed;
+    top: var(--space-4);
+    left: var(--space-4);
+    z-index: 9999;
+    padding: var(--space-3) var(--space-6);
+    background: var(--indigo);
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    border-radius: var(--radius);
+    transform: translateY(-200%);
+    transition: transform var(--t) var(--ease-out);
+  }
+  .skip-link:focus { transform: translateY(0); }
+
+  /* ── Sidebar (desktop only) ───────────────────────────────── */
+  .sidebar {
+    display: none; /* shown via media query below */
+    width: var(--nav-w);
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100svh;
+    border-right: 1px solid var(--ink-border);
+    z-index: 100;
+  }
+  .sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--space-8) var(--space-6);
+    gap: var(--space-12);
+  }
+
+  .sidebar-logo {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--sand);
+    display: inline-flex;
+    align-items: baseline;
+    transition: opacity var(--t-fast);
+  }
+  .sidebar-logo:hover { opacity: 0.75; }
+  .sidebar-logo-dot { color: var(--indigo); }
+
+  .sidebar-nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--sand-dim);
+    padding: var(--space-2) 0;
+    transition: color var(--t-fast);
+    letter-spacing: 0.02em;
+  }
+  .sidebar-link:hover { color: var(--sand); }
+  .sidebar-link-line {
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: currentColor;
+    flex-shrink: 0;
+    transition: width var(--t) var(--ease-out), background var(--t-fast);
+  }
+  .sidebar-link:hover .sidebar-link-line { width: 32px; }
+
+  .sidebar-avail {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--sand-dim);
+  }
+  .avail-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+    flex-shrink: 0;
+    animation: pulse-green 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+  }
+
+  /* ── Mobile nav ───────────────────────────────────────────── */
+  .mobile-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    padding: var(--space-4) var(--space-6);
+    background: rgba(12, 14, 26, 0.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--ink-border);
+  }
+  .mobile-logo {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--sand);
+  }
+
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: var(--space-2);
+    width: 34px;
+  }
+  .hamburger span {
+    display: block;
+    height: 1.5px;
+    background: var(--sand);
+    border-radius: 2px;
+    transform-origin: left center;
+    transition: transform var(--t) var(--ease), opacity var(--t), width var(--t);
+  }
+  .hamburger[aria-expanded="true"] span:nth-child(1) { transform: rotate(45deg) translate(1px, -1px); }
+  .hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; width: 0; }
+  .hamburger[aria-expanded="true"] span:nth-child(3) { transform: rotate(-45deg) translate(1px, 1px); }
+
+  /* Mobile drawer */
+  .mobile-drawer {
+    display: none; /* flex when open */
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    background: rgba(12, 14, 26, 0.97);
+    backdrop-filter: blur(24px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    opacity: 0;
+    transition: opacity var(--t) var(--ease);
+    pointer-events: none;
+  }
+  .mobile-drawer.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .mobile-drawer ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+  }
+  .drawer-link {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--sand-dim);
+    transition: color var(--t-fast);
+  }
+  .drawer-link:hover { color: var(--sand); }
+
+  /* ── Main content area ────────────────────────────────────── */
+  .main-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ── Desktop breakpoint ───────────────────────────────────── */
+  @media (min-width: 1024px) {
+    .sidebar     { display: flex; }
+    .mobile-nav  { display: none; }
+    .main-content { margin-left: var(--nav-w); }
+  }
+</style>
+
+<script>
+  // Mobile menu toggle
+  const hamburger = document.getElementById('hamburger') as HTMLButtonElement;
+  const drawer    = document.getElementById('mobile-drawer') as HTMLDivElement;
+
+  function openMenu() {
+    hamburger.setAttribute('aria-expanded', 'true');
+    drawer.setAttribute('aria-hidden', 'false');
+    drawer.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => drawer.classList.add('open'));
+  }
+
+  function closeMenu() {
+    hamburger.setAttribute('aria-expanded', 'false');
+    drawer.setAttribute('aria-hidden', 'true');
+    drawer.classList.remove('open');
+    document.body.style.overflow = '';
+    drawer.addEventListener('transitionend', () => {
+      if (!drawer.classList.contains('open')) drawer.style.display = 'none';
+    }, { once: true });
+  }
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.getAttribute('aria-expanded') === 'true';
+    isOpen ? closeMenu() : openMenu();
+  });
+
+  // Close on drawer link click or Escape key
+  drawer.querySelectorAll('.drawer-link').forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  // Highlight active nav link based on scroll position
+  const sidebarLinks = document.querySelectorAll<HTMLAnchorElement>('.sidebar-link');
+  const sections     = document.querySelectorAll<HTMLElement>('section[id]');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          sidebarLinks.forEach((link) => {
+            const active = link.href.endsWith(`#${id}`);
+            link.style.color = active ? 'var(--sand)' : '';
+            const line = link.querySelector<HTMLSpanElement>('.sidebar-link-line');
+            if (line) line.style.width = active ? '32px' : '';
+          });
+        }
+      });
+    },
+    { rootMargin: '-40% 0px -55% 0px' }
+  );
+  sections.forEach((s) => observer.observe(s));
+</script>

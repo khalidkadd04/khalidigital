@@ -1,0 +1,309 @@
+---
+/**
+ * ProjectCard.astro
+ * ─────────────────────────────────────────────────────────────────
+ * Renders one project entry in the projects grid.
+ * Used by the projects section on index.astro and projects/index.astro.
+ *
+ * Props: all come from the content collection frontmatter.
+ *   slug     — used to build the detail page URL
+ *   title
+ *   summary
+ *   tags
+ *   category — "bi" | "marketing" | "analytics" | "strategy"
+ *   date
+ *   featured — if true, renders slightly larger (handled by parent grid)
+ *   link     — optional external link
+ *   metrics  — optional array of { value, label } KPI objects
+ *   image    — optional image path
+ */
+
+interface Metric { value: string; label: string; }
+
+interface Props {
+  slug:     string;
+  title:    string;
+  summary:  string;
+  tags:     string[];
+  category: 'bi' | 'marketing' | 'analytics' | 'strategy';
+  date:     Date;
+  featured?: boolean;
+  link?:    string;
+  metrics?: Metric[];
+  image?:   string;
+}
+
+const {
+  slug, title, summary, tags, category, date,
+  featured = false, link, metrics, image,
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+
+// Map category to human label and colour class
+const categoryMeta: Record<string, { label: string; cls: string }> = {
+  bi:        { label: 'Business Intelligence', cls: 'badge-bi'        },
+  marketing: { label: 'Marketing',             cls: 'badge-marketing' },
+  analytics: { label: 'Analytics',             cls: 'badge-analytics' },
+  strategy:  { label: 'Strategy',              cls: 'badge-strategy'  },
+};
+const meta = categoryMeta[category] ?? { label: category, cls: 'badge-bi' };
+
+const formattedDate = date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+const detailUrl = `${base}projects/${slug}/`;
+---
+
+<article class:list={['card', { 'card--featured': featured }]}>
+
+  <!-- Image / placeholder -->
+  <div class="card-thumb">
+    {image
+      ? <img src={image} alt={`Screenshot of ${title}`} loading="lazy" />
+      : <div class="card-thumb-placeholder" aria-hidden="true">
+          <span class="thumb-icon">
+            {category === 'bi'        && '📊'}
+            {category === 'marketing' && '📣'}
+            {category === 'analytics' && '📈'}
+            {category === 'strategy'  && '🎯'}
+          </span>
+        </div>
+    }
+  </div>
+
+  <!-- Card body -->
+  <div class="card-body">
+
+    <!-- Category + date row -->
+    <div class="card-meta">
+      <span class:list={['badge', meta.cls]}>{meta.label}</span>
+      <time datetime={date.toISOString()} class="card-date">{formattedDate}</time>
+    </div>
+
+    <!-- Title -->
+    <h3 class="card-title">
+      <a href={detailUrl} class="card-title-link">{title}</a>
+    </h3>
+
+    <!-- Summary -->
+    <p class="card-summary">{summary}</p>
+
+    <!-- Metrics (if provided) -->
+    {metrics && metrics.length > 0 && (
+      <ul class="card-metrics" aria-label="Key metrics">
+        {metrics.map(({ value, label }) => (
+          <li class="metric">
+            <span class="metric-value">{value}</span>
+            <span class="metric-label">{label}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <!-- Tags -->
+    <ul class="card-tags" aria-label="Tools used">
+      {tags.map((tag) => (
+        <li class="tag">{tag}</li>
+      ))}
+    </ul>
+
+    <!-- Footer links -->
+    <div class="card-footer">
+      <a href={detailUrl} class="card-read-more">
+        Read case study
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+      {link && (
+        <a href={link} class="card-ext-link" target="_blank" rel="noopener noreferrer"
+           aria-label={`External link for ${title}`}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Live
+        </a>
+      )}
+    </div>
+
+  </div>
+</article>
+
+<style>
+  /* Card shell */
+  .card {
+    background: var(--ink-raised);
+    border: 1px solid var(--ink-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--t) var(--ease-out),
+                border-color var(--t),
+                box-shadow var(--t);
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(91,107,248,0.25);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+  }
+  /* Featured cards get a subtle indigo top border */
+  .card--featured {
+    border-top: 2px solid var(--indigo);
+  }
+
+  /* Thumbnail */
+  .card-thumb {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .card-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.55s var(--ease-out);
+  }
+  .card:hover .card-thumb img { transform: scale(1.04); }
+  .card-thumb-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink-raised) 100%);
+  }
+  .thumb-icon { font-size: 2.25rem; opacity: 0.22; }
+
+  /* Card body */
+  .card-body {
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    flex: 1;
+  }
+
+  /* Meta row */
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+  .card-date {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    color: var(--sand-dim);
+    flex-shrink: 0;
+  }
+
+  /* Title */
+  .card-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+  }
+  .card-title-link {
+    color: var(--sand);
+    transition: color var(--t-fast);
+    /* Stretch link to entire card for click area */
+  }
+  .card-title-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .card { position: relative; } /* required for ::after stretch */
+  .card-title-link:hover { color: var(--indigo); }
+
+  /* Summary */
+  .card-summary {
+    font-size: var(--text-sm);
+    color: var(--sand-dim);
+    line-height: 1.65;
+    max-width: 52ch;
+  }
+
+  /* Metrics */
+  .card-metrics {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--ink-border);
+    border-bottom: 1px solid var(--ink-border);
+  }
+  .metric {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .metric-value {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--indigo);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .metric-label {
+    font-size: var(--text-xs);
+    color: var(--sand-dim);
+    line-height: 1.3;
+  }
+
+  /* Tags */
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: auto;
+  }
+  .tag {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--ink-border);
+    color: var(--sand-dim);
+  }
+
+  /* Footer */
+  .card-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--ink-border);
+    position: relative; /* lift above ::after overlay for clicks */
+    z-index: 1;
+  }
+  .card-read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--indigo);
+    letter-spacing: 0.02em;
+    transition: gap var(--t-fast);
+  }
+  .card-read-more:hover { gap: var(--space-2); }
+  .card-ext-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--sand-dim);
+    margin-left: auto;
+    transition: color var(--t-fast);
+  }
+  .card-ext-link:hover { color: var(--sand); }
+</style>

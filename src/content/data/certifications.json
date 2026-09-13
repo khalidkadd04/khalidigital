@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "name": "Google Analytics (GA4)",
+      "issuer": "Google — Skillshop",
+      "year": "2024",
+      "icon": "🎓",
+      "link": ""
+    },
+    {
+      "name": "Google Ads — Search",
+      "issuer": "Google — Skillshop",
+      "year": "2024",
+      "icon": "🎓",
+      "link": ""
+    },
+    {
+      "name": "HubSpot Inbound Marketing",
+      "issuer": "HubSpot Academy",
+      "year": "2024",
+      "icon": "🎓",
+      "link": ""
+    },
+    {
+      "name": "Power BI Data Analyst",
+      "issuer": "Microsoft Learn",
+      "year": "2025",
+      "icon": "🎓",
+      "link": ""
+    },
+    {
+      "name": "Meta Social Media Marketing",
+      "issuer": "Coursera — Meta",
+      "year": "2025",
+      "icon": "🎓",
+      "link": ""
+    },
+    {
+      "name": "Master Marketing Digital & BI",
+      "issuer": "Université / Grande École",
+      "year": "2025",
+      "icon": "🎓",
+      "link": ""
+    }
+  ]
+}

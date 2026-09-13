@@ -1,0 +1,48 @@
+{
+  "groups": [
+    {
+      "title": "Marketing Digital",
+      "icon": "📣",
+      "color": "v",
+      "skills": [
+        { "name": "SEO / SEA", "level": 82 },
+        { "name": "Social Media Ads", "level": 78 },
+        { "name": "Email Marketing", "level": 75 },
+        { "name": "Content Marketing", "level": 80 }
+      ]
+    },
+    {
+      "title": "Business Intelligence",
+      "icon": "📊",
+      "color": "t",
+      "skills": [
+        { "name": "Power BI", "level": 80 },
+        { "name": "Tableau", "level": 72 },
+        { "name": "SQL", "level": 70 },
+        { "name": "Google Data Studio", "level": 85 }
+      ]
+    },
+    {
+      "title": "Analytics",
+      "icon": "📈",
+      "color": "a",
+      "skills": [
+        { "name": "Google Analytics 4", "level": 88 },
+        { "name": "Google Tag Manager", "level": 74 },
+        { "name": "Excel avancé", "level": 82 },
+        { "name": "Python (pandas)", "level": 60 }
+      ]
+    },
+    {
+      "title": "Outils & Plateformes",
+      "icon": "🛠️",
+      "color": "v",
+      "skills": [
+        { "name": "Semrush / Ahrefs", "level": 76 },
+        { "name": "HubSpot / CRM", "level": 70 },
+        { "name": "Meta Ads Manager", "level": 78 },
+        { "name": "Canva / Figma", "level": 72 }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 {
   "siteTitle": "khalid kaddouri — Marketing Digital & Business Intelligence",
   "siteDescription": "Diplômé en Marketing Digital & Intelligence des Affaires — analyses data, stratégies digitales et growth marketing.",
+  "favicon": "",
   "firstName": "Khalid",
   "lastName": "Kaddouri",
   "highlightWord": "",
@@ -54,33 +55,26 @@
   "contact": {
     "email": "khalidkaddouriO4@gmail.com",
     "availability": "Disponible dès maintenant",
-    "linkedin": "https://www.linkedin.com/in/khalidkaddouri/",
     "behance": "https://behance.net/votre-profil",
-    "twitter": "https://x.com/votre-pseudo",
-    "github": "https://github.com/votre-pseudo"
+    "github": "https://github.com/votre-pseudo",
+    "linkedin": "https://www.linkedin.com/in/khalidkaddouri/",
+    "twitter": "https://x.com/votre-pseudo"
   },
-  "favicon": "",
   "socialLinks": [
+    {
+      "name": "Email",
+      "url": "mailto:khalidkaddouri04@gmail.com",
+      "icon": "email"
+    },
     {
       "name": "LinkedIn",
       "url": "https://www.linkedin.com/in/khalidkaddouri/",
       "icon": "linkedin"
     },
     {
-      "name": "GitHub",
-      "url": "https://github.com/votre-pseudo",
-      "icon": "github"
-    },
-    {
-      "name": "Behance",
-      "url": "https://behance.net/votre-profil",
-      "icon": "behance"
-    },
-    {
-      "name": "Twitter / X",
-      "url": "https://x.com/votre-pseudo",
-      "icon": "twitter"
+      "name": "Site Web",
+      "url": "https://khalidkadd04.github.io/khalidkaddouri/",
+      "icon": "link"
     }
   ]
 }
-

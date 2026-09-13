@@ -10,17 +10,17 @@ const projects = defineCollection({
 
   schema: z.object({
     title: z.string(),
-    summary: z.string(),
-    description: z.string(),
-    tags: z.array(z.string()),
-    category: z.enum(['bi', 'marketing', 'analytics', 'strategy']),
+    summary: z.string().optional().default(''),
+    description: z.string().optional().default(''),
+    tags: z.array(z.string()).optional().default([]),
+    category: z.enum(['bi', 'marketing', 'analytics', 'strategy']).default('bi'),
     date: z.coerce.date(),
     featured: z.boolean().optional().default(false),
     order: z.number().int().optional().default(100),
     visibility: z.enum(['both', 'projects_only', 'home_only', 'hidden']).optional().default('both'),
-    status: z.string().optional(),
-    link: z.string().url().optional(),
-    image: z.string().optional(),
+    status: z.string().optional().default(''),
+    link: z.string().optional().default(''),
+    image: z.string().optional().default(''),
     gallery: z
       .array(
         z.union([
@@ -41,7 +41,8 @@ const projects = defineCollection({
         })
       )
       .max(3)
-      .optional(),
+      .optional()
+      .default([]),
   }),
 });
 

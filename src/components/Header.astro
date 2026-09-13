@@ -1,0 +1,318 @@
+---
+import profile from '../content/data/profile.json';
+
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const initials = `${profile.firstName?.[0] || 'V'}${profile.lastName?.[0] || 'N'}`;
+
+// Liens de navigation unifiés : le lien Projets renvoie toujours vers l'accueil #projects
+const navLinks = [
+  { label: 'À propos', href: `${base}#about` },
+  { label: 'Projets', href: `${base}#projects` },
+  { label: 'Compétences', href: `${base}#skills` },
+  { label: 'Certifications', href: `${base}#certs` },
+  { label: 'Contact', href: `${base}#contact`, isCta: true },
+];
+---
+
+<header class="header-container">
+  <nav id="navbar" class="navbar">
+    <a href={`${base}#hero`} class="nav-logo" aria-label="Retour à l'accueil">
+      {initials}<span class="dot">.</span>
+    </a>
+
+    <div class="nav-links">
+      {navLinks.map((link) => (
+        <a href={link.href} class={link.isCta ? 'nav-cta' : 'nav-link'}>
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <button
+      class="nav-hamburger"
+      id="hamburger"
+      aria-label="Ouvrir le menu de navigation"
+      aria-expanded="false"
+      aria-controls="nav-drawer"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <!-- Tiroir mobile plein écran / déroulant -->
+  <div class="nav-drawer" id="nav-drawer" aria-hidden="true" role="dialog" aria-label="Menu de navigation mobile">
+    <div class="drawer-inner">
+      {navLinks.map((link) => (
+        <a href={link.href} class={`drawer-link ${link.isCta ? 'drawer-cta' : ''}`}>
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</header>
+
+<style>
+  .header-container {
+    position: relative;
+    z-index: 500;
+  }
+
+  .navbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2rem;
+    transition: background 0.35s ease, backdrop-filter 0.35s ease, padding 0.35s ease, border-color 0.35s ease;
+    border-bottom: 1px solid transparent;
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      padding: 0.9rem 1.25rem;
+    }
+  }
+
+  .navbar.scrolled {
+    background: rgba(13, 13, 20, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.07));
+    padding: 0.9rem 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .navbar.scrolled {
+      padding: 0.75rem 1.25rem;
+    }
+  }
+
+  .nav-logo {
+    font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--off-white, #F2F0EC);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .dot {
+    color: var(--violet, #7C3AED);
+  }
+
+  .nav-links {
+    display: none;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  @media (min-width: 769px) {
+    .nav-links {
+      display: flex;
+    }
+  }
+
+  .nav-link {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--muted, #7B7C99);
+    text-decoration: none;
+    transition: color 0.25s ease;
+    position: relative;
+  }
+
+  .nav-link:hover {
+    color: var(--off-white, #F2F0EC);
+  }
+
+  .nav-cta {
+    font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--off-white, #F2F0EC);
+    background: rgba(124, 58, 237, 0.15);
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    touch-action: manipulation;
+  }
+
+  .nav-cta:hover {
+    background: var(--violet, #7C3AED);
+    border-color: var(--violet, #7C3AED);
+    transform: translateY(-1px);
+    color: #fff;
+  }
+
+  /* ── Hamburger mobile ── */
+  .nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.07));
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 0;
+    touch-action: manipulation;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  @media (min-width: 769px) {
+    .nav-hamburger {
+      display: none;
+    }
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--off-white, #F2F0EC);
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .nav-hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .nav-hamburger.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* ── Tiroir mobile ── */
+  .nav-drawer {
+    display: none;
+    position: fixed;
+    top: 60px; left: 0; right: 0; bottom: 0;
+    background: rgba(13, 13, 20, 0.98);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    z-index: 490;
+    padding: 2rem 1.5rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.07));
+  }
+
+  .nav-drawer.open {
+    display: block;
+  }
+
+  .drawer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .drawer-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--off-white, #F2F0EC);
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: var(--card-bg, #16162A);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.07));
+    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    touch-action: manipulation;
+  }
+
+  .drawer-link:hover {
+    background: rgba(124, 58, 237, 0.15);
+    border-color: var(--violet, #7C3AED);
+    color: var(--violet-l, #A78BFA);
+  }
+
+  .drawer-cta {
+    background: var(--violet, #7C3AED);
+    color: #fff;
+    border-color: var(--violet, #7C3AED);
+    margin-top: 0.5rem;
+  }
+
+  .drawer-cta:hover {
+    background: var(--violet-l, #A78BFA);
+    color: #fff;
+  }
+</style>
+
+<script>
+  function setupHeader() {
+    const navbar = document.getElementById('navbar');
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('nav-drawer');
+
+    if (!navbar || !hamburger || !drawer) return;
+
+    // Scroll state
+    const handleScroll = () => {
+      if (window.scrollY > 30) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    // Toggle drawer
+    function setDrawer(open: boolean) {
+      hamburger.classList.toggle('open', open);
+      drawer.classList.toggle('open', open);
+      drawer.setAttribute('aria-hidden', String(!open));
+      hamburger.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = drawer.classList.contains('open');
+      setDrawer(!isOpen);
+    });
+
+    // Fermer quand on clique sur un lien
+    drawer.querySelectorAll('.drawer-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        setDrawer(false);
+      });
+    });
+
+    // Fermer sur Échap
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawer.classList.contains('open')) {
+        setDrawer(false);
+      }
+    });
+  }
+
+  // Initialisation au chargement
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupHeader);
+  } else {
+    setupHeader();
+  }
+</script>

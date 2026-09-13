@@ -5,6 +5,8 @@ description: "Conducted a technical SEO audit using Semrush and Screaming Frog, 
 tags: ["SEO", "Semrush", "Screaming Frog", "Google Search Console", "Content Strategy"]
 category: "marketing"
 date: "2025-01-20"
+order: 2
+visibility: both
 featured: true
 metrics:
   - value: "34"

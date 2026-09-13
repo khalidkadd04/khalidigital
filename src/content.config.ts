@@ -16,9 +16,23 @@ const projects = defineCollection({
     category: z.enum(['bi', 'marketing', 'analytics', 'strategy']),
     date: z.coerce.date(),
     featured: z.boolean().optional().default(false),
+    order: z.number().int().optional().default(100),
+    visibility: z.enum(['both', 'projects_only', 'home_only', 'hidden']).optional().default('both'),
     status: z.string().optional(),
     link: z.string().url().optional(),
     image: z.string().optional(),
+    gallery: z
+      .array(
+        z.union([
+          z.string(),
+          z.object({
+            image: z.string(),
+            caption: z.string().optional(),
+          }),
+        ])
+      )
+      .optional()
+      .default([]),
     metrics: z
       .array(
         z.object({

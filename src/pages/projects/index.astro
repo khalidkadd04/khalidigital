@@ -1,0 +1,487 @@
+---
+import { getCollection } from 'astro:content';
+import profile from '../../content/data/profile.json';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Favicon from '../../components/Favicon.astro';
+import { sortProjects, filterProjectsForPage, resolveMediaUrl } from '../../utils/projects';
+
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
+const allProjects = await getCollection('projects');
+const visibleProjects = filterProjectsForPage(allProjects);
+const projects = sortProjects(visibleProjects);
+
+const getCategoryIcon = (category: string) => {
+  switch (category) {
+    case 'bi': return '📊';
+    case 'marketing': return '🎯';
+    case 'analytics': return '🔍';
+    case 'strategy': return '📱';
+    default: return '📊';
+  }
+};
+
+const getCategoryLabel = (category: string) => {
+  switch (category) {
+    case 'bi': return 'Business Intelligence';
+    case 'marketing': return 'Marketing Digital';
+    case 'analytics': return 'Analytics & Data';
+    case 'strategy': return 'Stratégie';
+    default: return category;
+  }
+};
+
+const getStatusBadge = (s?: string) => {
+  if (!s || !s.trim()) return null;
+  const lower = s.toLowerCase().trim();
+  if (lower.includes('termin') || lower.includes('fini') || lower.includes('complét')) {
+    return { cls: 'status-done', dotCls: 'dot-done', text: s };
+  }
+  if (lower.includes('cours') || lower.includes('progr') || lower.includes('développ')) {
+    return { cls: 'status-progress', dotCls: 'dot-progress', text: s };
+  }
+  if (lower.includes('test') || lower.includes('révis')) {
+    return { cls: 'status-test', dotCls: 'dot-test', text: s };
+  }
+  return { cls: 'status-default', dotCls: 'dot-default', text: s };
+};
+
+const pageTitle = `Tous les projets — ${profile.firstName} ${profile.lastName}`;
+const pageDescription = `Explorez l'ensemble des études de cas, dashboards Power BI, campagnes et projets de ${profile.firstName} ${profile.lastName}.`;
+---
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{pageTitle}</title>
+  <meta name="description" content={pageDescription} />
+
+  <Favicon />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --ink:       #0D0D14;
+      --ink-2:     #13131F;
+      --surface:   #1A1A2E;
+      --off-white: #F2F0EC;
+      --violet:    #7C3AED;
+      --violet-l:  #A78BFA;
+      --teal:      #0EA5A0;
+      --amber:     #F59E0B;
+      --muted:     #7B7C99;
+      --border:    rgba(255,255,255,0.07);
+      --card-bg:   #16162A;
+
+      --font-display: 'Plus Jakarta Sans', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+      --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+      --t:         0.35s var(--ease);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--off-white);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    main {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 7rem 1.5rem 5rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      main { padding: 6rem 1.25rem 4rem; }
+    }
+
+    /* ── Hero Banner ── */
+    .projects-header {
+      margin-bottom: 2.5rem;
+      text-align: left;
+    }
+    .back-home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+      transition: color var(--t), transform var(--t);
+    }
+    .back-home-link:hover {
+      color: var(--violet-l);
+      transform: translateX(-3px);
+    }
+    .page-eyebrow {
+      font-family: var(--font-display);
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--violet-l);
+      margin-bottom: 0.4rem;
+    }
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      word-break: break-word;
+    }
+    .page-title em {
+      font-style: normal;
+      color: var(--violet-l);
+    }
+    .page-subtitle {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 650px;
+      line-height: 1.6;
+    }
+
+    /* ── Category Filters ── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 3rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-btn {
+      font-family: var(--font-display);
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: background var(--t), border-color var(--t), color var(--t), transform var(--t);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .filter-btn:hover {
+      border-color: rgba(124,58,237,0.4);
+      color: var(--off-white);
+      transform: translateY(-1px);
+    }
+    .filter-btn.active {
+      background: var(--violet);
+      border-color: var(--violet);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+    }
+    .filter-count {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      background: rgba(255,255,255,0.15);
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+    }
+
+    /* ── Projects Grid ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+    }
+    @media (min-width: 640px) {
+      .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .projects-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: border-color var(--t), transform var(--t), box-shadow var(--t);
+      position: relative;
+    }
+    .project-card:hover {
+      border-color: rgba(124,58,237,0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    }
+
+    .project-thumb {
+      height: 180px;
+      position: relative;
+      background: linear-gradient(135deg, var(--surface), var(--card-bg));
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .project-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s var(--ease);
+    }
+    .project-card:hover .project-thumb img { transform: scale(1.04); }
+    .thumb-icon { font-size: 2.5rem; opacity: 0.25; }
+
+    .project-status-pill {
+      position: absolute; top: 10px; right: 10px;
+      font-family: var(--font-display); font-size: 0.68rem; font-weight: 600;
+      padding: 0.22rem 0.6rem; border-radius: 999px;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: center; gap: 0.35rem;
+      z-index: 2;
+    }
+    .status-done     { background: rgba(14,165,160,0.18); border: 1px solid rgba(14,165,160,0.4); color: #2dd4bf; }
+    .status-progress { background: rgba(124,58,237,0.18); border: 1px solid rgba(124,58,237,0.4); color: #c084fc; }
+    .status-test     { background: rgba(245,158,11,0.18); border: 1px solid rgba(245,158,11,0.4); color: #fbbf24; }
+    .status-default  { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--off-white); }
+    .status-dot      { width: 5px; height: 5px; border-radius: 50%; }
+    .dot-done        { background: #2dd4bf; box-shadow: 0 0 5px #2dd4bf; }
+    .dot-progress    { background: #c084fc; box-shadow: 0 0 5px #c084fc; }
+    .dot-test        { background: #fbbf24; box-shadow: 0 0 5px #fbbf24; }
+    .dot-default     { background: var(--muted); }
+
+    .project-body {
+      padding: 1.4rem;
+      display: flex; flex-direction: column;
+      flex: 1;
+    }
+
+    .project-tags {
+      display: flex; flex-wrap: wrap; gap: 0.35rem;
+      margin-bottom: 0.75rem;
+    }
+    .project-tag {
+      font-family: var(--font-display); font-size: 0.68rem; font-weight: 600;
+      padding: 0.15rem 0.5rem; border-radius: 4px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .project-metrics {
+      display: flex; gap: 0.75rem;
+      padding: 0.6rem 0; margin-bottom: 0.75rem;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .project-metric { display: flex; flex-direction: column; }
+    .metric-val {
+      font-family: var(--font-display); font-size: 0.95rem; font-weight: 800;
+      color: var(--violet-l); line-height: 1;
+    }
+    .metric-lbl { font-size: 0.67rem; color: var(--muted); margin-top: 2px; }
+
+    .project-title {
+      font-family: var(--font-display); font-size: 1.05rem; font-weight: 700;
+      line-height: 1.35; margin-bottom: 0.5rem;
+      word-break: break-word;
+    }
+    .project-title a { color: inherit; transition: color var(--t); }
+    .project-title a:hover { color: var(--violet-l); }
+
+    .project-desc {
+      font-size: 0.84rem; color: var(--muted); line-height: 1.6;
+      margin-bottom: 1.1rem; flex: 1;
+    }
+
+    .project-links {
+      display: flex; gap: 0.75rem; margin-top: auto; flex-wrap: wrap;
+    }
+    .project-link {
+      font-family: var(--font-display); font-size: 0.8rem; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      color: var(--muted); transition: color var(--t);
+      min-height: 36px; padding: 0.2rem 0;
+    }
+    .project-link:hover { color: var(--off-white); }
+    .project-link.primary { color: var(--violet-l); font-weight: 600; }
+    .project-link.primary:hover { color: #fff; }
+
+    /* ── Empty State ── */
+    .empty-state {
+      display: none;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--muted);
+    }
+    .empty-state.show { display: block; }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+  <Header />
+
+  <main>
+    <div class="projects-header">
+      <a href={`${base}#projects`} class="back-home-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Retour à l'accueil
+      </a>
+      <div class="page-eyebrow">02 — Réalisations</div>
+      <h1 class="page-title">Tous mes <em>projets</em></h1>
+      <p class="page-subtitle">
+        Explorez l'ensemble de mes travaux, études de cas et réalisations en Business Intelligence, Marketing Digital et Analytics.
+      </p>
+    </div>
+
+    <!-- Filtres par catégorie -->
+    <div class="filter-bar" role="tablist" aria-label="Filtrer les projets">
+      <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">
+        Tous <span class="filter-count">{projects.length}</span>
+      </button>
+      <button class="filter-btn" data-filter="bi" role="tab" aria-selected="false">
+        📊 Business Intelligence
+      </button>
+      <button class="filter-btn" data-filter="marketing" role="tab" aria-selected="false">
+        🎯 Marketing Digital
+      </button>
+      <button class="filter-btn" data-filter="analytics" role="tab" aria-selected="false">
+        🔍 Analytics & Data
+      </button>
+      <button class="filter-btn" data-filter="strategy" role="tab" aria-selected="false">
+        📱 Stratégie
+      </button>
+    </div>
+
+    <!-- Grille des projets -->
+    <div class="projects-grid" id="projects-container">
+      {projects.map((project) => {
+        const detailUrl = `${base}projects/${project.id}/`;
+        const sb = getStatusBadge(project.data.status);
+        return (
+          <article class="project-card" data-category={project.data.category}>
+            <div class="project-thumb">
+              {sb && (
+                <span class={`project-status-pill ${sb.cls}`}>
+                  <span class={`status-dot ${sb.dotCls}`}></span>
+                  {sb.text}
+                </span>
+              )}
+              {project.data.image ? (
+                <img src={resolveMediaUrl(project.data.image, base)} alt={project.data.title} loading="lazy" />
+              ) : (
+                <span class="thumb-icon">{getCategoryIcon(project.data.category)}</span>
+              )}
+            </div>
+
+            <div class="project-body">
+              <div class="project-tags">
+                {project.data.tags.slice(0, 3).map((tag) => (
+                  <span class="project-tag">{tag}</span>
+                ))}
+              </div>
+
+              {project.data.metrics && project.data.metrics.length > 0 && (
+                <div class="project-metrics">
+                  {project.data.metrics.map((m) => (
+                    <div class="project-metric">
+                      <span class="metric-val">{m.value}</span>
+                      <span class="metric-lbl">{m.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <h2 class="project-title">
+                <a href={detailUrl}>{project.data.title}</a>
+              </h2>
+              <p class="project-desc">{project.data.summary}</p>
+
+              <div class="project-links">
+                <a href={detailUrl} class="project-link primary">
+                  Lire l'étude de cas
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </a>
+                {project.data.link && (
+                  <a href={project.data.link} class="project-link" target="_blank" rel="noopener noreferrer">
+                    Démo en ligne ↗
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">📂</div>
+      <h3>Aucun projet dans cette catégorie pour le moment</h3>
+      <p>Sélectionnez un autre filtre pour voir les réalisations correspondantes.</p>
+    </div>
+  </main>
+
+  <Footer />
+
+  <script>
+    function setupFilters() {
+      const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+      const cards = document.querySelectorAll<HTMLElement>('.project-card');
+      const emptyState = document.getElementById('empty-state');
+
+      filterBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach((b) => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+
+          const category = btn.dataset.filter;
+          let visibleCount = 0;
+
+          cards.forEach((card) => {
+            const cardCat = card.dataset.category;
+            if (category === 'all' || cardCat === category) {
+              card.style.display = 'flex';
+              visibleCount++;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+
+          if (emptyState) {
+            emptyState.classList.toggle('show', visibleCount === 0);
+          }
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupFilters);
+    } else {
+      setupFilters();
+    }
+  </script>
+</body>
+</html>

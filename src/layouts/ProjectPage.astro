@@ -8,10 +8,19 @@
  */
 
 import profile from '../content/data/profile.json';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Favicon from '../components/Favicon.astro';
+import { resolveMediaUrl } from '../utils/projects';
 
 interface Metric {
   value: string;
   label: string;
+}
+
+interface GalleryItem {
+  image: string;
+  caption?: string;
 }
 
 interface Props {
@@ -24,6 +33,7 @@ interface Props {
   link?: string;
   metrics?: Metric[];
   image?: string;
+  gallery?: Array<string | GalleryItem>;
   prevProject?: { slug: string; title: string } | null;
   nextProject?: { slug: string; title: string } | null;
 }
@@ -38,9 +48,17 @@ const {
   link,
   metrics = [],
   image,
+  gallery = [],
   prevProject,
   nextProject,
 } = Astro.props;
+
+const normalizedGallery: GalleryItem[] = (gallery || []).map((item) => {
+  if (typeof item === 'string') {
+    return { image: item, caption: '' };
+  }
+  return item;
+}).filter((item) => item && item.image && item.image.trim());
 
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const initials = `${profile.firstName?.[0] || 'K'}${profile.lastName?.[0] || 'K'}`;
@@ -74,16 +92,6 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
   month: 'long',
   year: 'numeric',
 }) : '';
-
-const resolveMediaUrl = (url?: string) => {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-    return url;
-  }
-  const cleanPath = url.replace(/^\/+/, '');
-  const encodedPath = cleanPath.split('/').map((segment) => encodeURIComponent(decodeURIComponent(segment))).join('/');
-  return `${base}${encodedPath}`;
-};
 ---
 
 <!DOCTYPE html>
@@ -111,7 +119,7 @@ const resolveMediaUrl = (url?: string) => {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <Favicon />
 
   <style>
     /* ═══════════════════════════════════════════════════
@@ -831,34 +839,8 @@ const resolveMediaUrl = (url?: string) => {
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
 
-  <!-- ══════════════════════════════════════════
-       NAVBAR FLOATING (IDENTIQUE ACCUEIL)
-  ══════════════════════════════════════════ -->
-  <nav id="navbar">
-    <a href={base} class="nav-logo" aria-label="Retour à l'accueil">
-      {initials}<span class="dot">.</span>
-    </a>
-    <div class="nav-links">
-      <a href={`${base}#about`}>À propos</a>
-      <a href={`${base}#skills`}>Compétences</a>
-      <a href={`${base}#projects`}>Projets</a>
-      <a href={`${base}#certs`}>Certifications</a>
-      <a href={`${base}#contact`}>Contact</a>
-      <a href={`${base}#contact`} class="nav-cta">Me contacter</a>
-    </div>
-    <button class="nav-hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-
-  <!-- Menu mobile tiroir -->
-  <div class="nav-drawer" id="nav-drawer" aria-hidden="true">
-    <a href={`${base}#about`} class="drawer-link">À propos</a>
-    <a href={`${base}#skills`} class="drawer-link">Compétences</a>
-    <a href={`${base}#projects`} class="drawer-link">Projets</a>
-    <a href={`${base}#certs`} class="drawer-link">Certifications</a>
-    <a href={`${base}#contact`} class="drawer-link">Contact</a>
-  </div>
+  <!-- Header unifié partagé -->
+  <Header />
 
   <!-- ══════════════════════════════════════════
        CORPS PRINCIPAL
@@ -944,7 +926,7 @@ const resolveMediaUrl = (url?: string) => {
       {image && (
         <div class="project-hero-thumb">
           <img
-            src={resolveMediaUrl(image)}
+            src={resolveMediaUrl(image, base)}
             alt={`Illustration pour ${title}`}
           />
         </div>
@@ -955,6 +937,50 @@ const resolveMediaUrl = (url?: string) => {
     <article class="project-prose">
       <slot />
     </article>
+
+    <!-- Galerie d'images supplémentaires (si renseignée dans le projet) -->
+    {normalizedGallery && normalizedGallery.length > 0 && (
+      <section class="project-gallery-section">
+        <div class="gallery-heading">
+          <div class="gallery-eyebrow">Illustrations & Captures</div>
+          <h2 class="gallery-title">Galerie du <em>projet</em></h2>
+          <p class="gallery-subtitle">Cliquez sur une image pour l'agrandir en haute résolution.</p>
+        </div>
+
+        <div class="gallery-grid">
+          {normalizedGallery.map((item, idx) => (
+            <figure class="gallery-item">
+              <div
+                class="gallery-thumb-wrap"
+                role="button"
+                tabindex="0"
+                data-full-img={resolveMediaUrl(item.image, base)}
+                data-caption={item.caption || `${title} — Aperçu ${idx + 1}`}
+                aria-label={`Agrandir : ${item.caption || 'Image du projet'}`}
+              >
+                <img
+                  src={resolveMediaUrl(item.image, base)}
+                  alt={item.caption || `${title} — Aperçu ${idx + 1}`}
+                  loading="lazy"
+                />
+                <div class="gallery-zoom-badge" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    <line x1="11" y1="8" x2="11" y2="14"/>
+                    <line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                  <span>Agrandir</span>
+                </div>
+              </div>
+              {item.caption && (
+                <figcaption class="gallery-caption">{item.caption}</figcaption>
+              )}
+            </figure>
+          ))}
+        </div>
+      </section>
+    )}
 
     <!-- Bannière d'appel à l'action -->
     <div class="project-cta-box">
@@ -995,44 +1021,224 @@ const resolveMediaUrl = (url?: string) => {
 
   </main>
 
-  <!-- ══════════════════════════════════════════
-       FOOTER IDENTIQUE À L'ACCUEIL
-  ══════════════════════════════════════════ -->
-  <footer>
-    <p>© {new Date().getFullYear()} {profile.firstName} {profile.lastName} — Tous droits réservés</p>
-    <p>{profile.roleBadge}</p>
-    <p style="margin-top: 0.75rem;">
-      <a href={`${base}admin/`} class="footer-admin-link">⚙️ Administration CMS</a>
-    </p>
-  </footer>
+  <!-- Modale Lightbox plein écran -->
+  <div id="lightbox-modal" class="lightbox-modal" aria-hidden="true" role="dialog" aria-label="Visualisation de l'image">
+    <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
+    <div class="lightbox-dialog">
+      <button class="lightbox-close" id="lightbox-close" aria-label="Fermer la vue agrandie">✕</button>
+      <div class="lightbox-img-box">
+        <img id="lightbox-img" src="" alt="" />
+      </div>
+      <p id="lightbox-caption" class="lightbox-caption"></p>
+    </div>
+  </div>
 
-  <!-- ══════════════════════════════════════════
-       SCRIPTS INTERACTIFS
-  ══════════════════════════════════════════ -->
-  <script>
-    // Menu mobile
-    const hamburger = document.getElementById('hamburger');
-    const drawer    = document.getElementById('nav-drawer');
+  <!-- Pied de page unifié -->
+  <Footer />
 
-    function toggleMenu(open: boolean) {
-      if (!hamburger || !drawer) return;
-      hamburger.classList.toggle('open', open);
-      drawer.classList.toggle('open', open);
-      drawer.setAttribute('aria-hidden', String(!open));
-      hamburger.setAttribute('aria-expanded', String(open));
-      document.body.style.overflow = open ? 'hidden' : '';
+  <style>
+    /* ── Galerie de projet ── */
+    .project-gallery-section {
+      margin-top: 3.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .gallery-heading {
+      margin-bottom: 1.75rem;
+    }
+    .gallery-eyebrow {
+      font-family: var(--font-display);
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--violet-l); margin-bottom: 0.35rem;
+    }
+    .gallery-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      font-weight: 800; letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+    .gallery-title em { font-style: normal; color: var(--violet-l); }
+    .gallery-subtitle {
+      color: var(--muted); font-size: 0.92rem;
     }
 
-    hamburger?.addEventListener('click', () => {
-      toggleMenu(!hamburger.classList.contains('open'));
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 640px) {
+      .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .gallery-item {
+      display: flex; flex-direction: column; gap: 0.6rem;
+    }
+    .gallery-thumb-wrap {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      cursor: pointer;
+      aspect-ratio: 16/10;
+      transition: border-color var(--t), transform var(--t), box-shadow var(--t);
+    }
+    .gallery-thumb-wrap:hover {
+      border-color: rgba(124,58,237,0.45);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+    .gallery-thumb-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s ease;
+    }
+    .gallery-thumb-wrap:hover img {
+      transform: scale(1.03);
+    }
+
+    .gallery-zoom-badge {
+      position: absolute; bottom: 12px; right: 12px;
+      background: rgba(13, 13, 20, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--off-white);
+      font-family: var(--font-display);
+      font-size: 0.75rem; font-weight: 600;
+      padding: 0.35rem 0.75rem; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      pointer-events: none;
+      opacity: 0.9;
+      transition: opacity var(--t), transform var(--t);
+    }
+    .gallery-thumb-wrap:hover .gallery-zoom-badge {
+      opacity: 1; transform: scale(1.04);
+      border-color: var(--violet); color: var(--violet-l);
+    }
+
+    .gallery-caption {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+      padding: 0 0.25rem;
+    }
+
+    /* ── Modale Lightbox ── */
+    .lightbox-modal {
+      display: none;
+      position: fixed; inset: 0;
+      z-index: 1000;
+      align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .lightbox-modal.open {
+      display: flex;
+    }
+    .lightbox-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(13, 13, 20, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .lightbox-dialog {
+      position: relative;
+      z-index: 1001;
+      max-width: 1000px;
+      width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+      animation: zoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .lightbox-close {
+      position: absolute; top: -44px; right: 0;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--off-white);
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.1rem;
+      touch-action: manipulation;
+      transition: background var(--t), color var(--t);
+    }
+    .lightbox-close:hover {
+      background: var(--violet); color: #fff;
+    }
+    .lightbox-img-box {
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #000;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+      max-height: 80vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lightbox-img-box img {
+      max-width: 100%; max-height: 80vh;
+      object-fit: contain;
+    }
+    .lightbox-caption {
+      margin-top: 0.85rem;
+      color: var(--off-white);
+      font-size: 0.92rem;
+      text-align: center;
+      max-width: 700px;
+    }
+  </style>
+
+  <script>
+    // Lightbox pour la galerie d'images
+    const lightbox = document.getElementById('lightbox-modal');
+    const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement | null;
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const lightboxClose = document.getElementById('lightbox-close');
+    const lightboxBackdrop = document.getElementById('lightbox-backdrop');
+
+    function openLightbox(src: string, caption: string) {
+      if (!lightbox || !lightboxImg) return;
+      lightboxImg.src = src;
+      lightboxImg.alt = caption || 'Image agrandie';
+      if (lightboxCaption) lightboxCaption.textContent = caption || '';
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      if (!lightbox) return;
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (lightboxImg) lightboxImg.src = '';
+    }
+
+    document.querySelectorAll<HTMLElement>('.gallery-thumb-wrap').forEach((thumb) => {
+      const trigger = () => {
+        const src = thumb.dataset.fullImg || '';
+        const caption = thumb.dataset.caption || '';
+        if (src) openLightbox(src, caption);
+      };
+      thumb.addEventListener('click', trigger);
+      thumb.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          trigger();
+        }
+      });
     });
 
-    document.querySelectorAll('.drawer-link').forEach(link => {
-      link.addEventListener('click', () => toggleMenu(false));
-    });
-
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') toggleMenu(false);
+    lightboxClose?.addEventListener('click', closeLightbox);
+    lightboxBackdrop?.addEventListener('click', closeLightbox);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox?.classList.contains('open')) {
+        closeLightbox();
+      }
     });
 
     // Curseur personnalisé (souris physique uniquement)
@@ -1054,7 +1260,7 @@ const resolveMediaUrl = (url?: string) => {
       }
       animRing();
 
-      document.querySelectorAll('a, button').forEach(el => {
+      document.querySelectorAll('a, button, .gallery-thumb-wrap').forEach(el => {
         el.addEventListener('mouseenter', () => {
           if (!ring) return;
           ring.style.width = '48px'; ring.style.height = '48px';
@@ -1067,14 +1273,6 @@ const resolveMediaUrl = (url?: string) => {
         });
       });
     }
-
-    // Effet navbar scrolled
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      if (navbar) {
-        navbar.classList.toggle('scrolled', window.scrollY > 40);
-      }
-    }, { passive: true });
   </script>
 </body>
 </html>

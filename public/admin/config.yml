@@ -72,6 +72,25 @@ collections:
           - { label: "En pause", value: "En pause" }
           - { label: "Archivé", value: "Archivé" }
 
+      - label: "Ordre d'affichage (Priorité)"
+        name: "order"
+        widget: "number"
+        value_type: "int"
+        default: 1
+        required: false
+        hint: "Numéro d'ordre (ex: 1 pour le premier, 2 pour le deuxième...). Plus le chiffre est petit, plus le projet s'affiche en premier."
+
+      - label: "Visibilité / Emplacement d'affichage"
+        name: "visibility"
+        widget: "select"
+        default: "both"
+        hint: "Choisissez où ce projet doit être affiché sur le portfolio"
+        options:
+          - { label: "Page d'accueil & Page Projets (Recommandé)", value: "both" }
+          - { label: "Uniquement sur la page Projets", value: "projects_only" }
+          - { label: "Uniquement sur la page d'accueil", value: "home_only" }
+          - { label: "Nulle part (Projet masqué / Brouillon)", value: "hidden" }
+
       - label: "Mettre en avant (Featured)"
         name: "featured"
         widget: "boolean"
@@ -89,11 +108,27 @@ collections:
         widget: "text"
         hint: "Description détaillée du contexte et des objectifs, affichée en haut de la page projet"
 
-      - label: "Image du projet"
+      - label: "Image principale / Couverture"
         name: "image"
         widget: "image"
         required: false
-        hint: "Capture ou maquette du projet (Recommandé: format 16:9, ex. 1280x720px, WebP ou JPG < 500 Ko)"
+        hint: "Image principale de couverture affichée sur la carte et en grand en haut de la page projet (Format 16:9 recommandé, ex. 1280x720px, WebP ou JPG < 500 Ko)"
+
+      - label: "Images supplémentaires (Galerie du projet)"
+        name: "gallery"
+        widget: "list"
+        required: false
+        hint: "Ajoutez plusieurs images pour enrichir la présentation du projet (captures d'écran, dashboards détaillés, schémas...)"
+        fields:
+          - label: "Image"
+            name: "image"
+            widget: "image"
+            hint: "Fichier image (WebP, PNG ou JPG)"
+          - label: "Légende / Description de l'image (Optionnel)"
+            name: "caption"
+            widget: "string"
+            required: false
+            hint: "Courte légende décrivant ce visuel ou ce KPI"
 
       - label: "Lien externe (démo ou rapport)"
         name: "link"
@@ -149,6 +184,12 @@ collections:
             name: "siteDescription"
             widget: "text"
             hint: "Description résumée de votre profil pour le référencement (150 à 160 caractères conseillés)"
+
+          - label: "Favicon du site (Icône onglet)"
+            name: "favicon"
+            widget: "image"
+            required: false
+            hint: "Icône de l'onglet du navigateur (SVG, PNG ou ICO carré 32x32px ou 64x64px). Si vide, le favicon par défaut sera utilisé."
 
           - label: "Prénom"
             name: "firstName"
@@ -237,10 +278,10 @@ collections:
                 widget: "string"
                 hint: "La description courte de ce chiffre"
 
-          - label: "Coordonnées & Réseaux"
+          - label: "Coordonnées principales"
             name: "contact"
             widget: "object"
-            hint: "Vos canaux de communication et réseaux sociaux professionnels"
+            hint: "Adresse email et statut de disponibilité"
             fields:
               - label: "Adresse Email"
                 name: "email"
@@ -250,26 +291,36 @@ collections:
                 name: "availability"
                 widget: "string"
                 hint: "Disponibilité affichée aux recruteurs (ex: Disponible dès maintenant)"
-              - label: "Lien LinkedIn"
-                name: "linkedin"
+
+          - label: "Réseaux sociaux & Canaux de contact"
+            name: "socialLinks"
+            widget: "list"
+            hint: "Gérez vos réseaux sociaux et moyens de contact : ajoutez (+), supprimez, réordonnez ou modifiez les icônes et liens."
+            fields:
+              - label: "Nom du réseau / contact"
+                name: "name"
                 widget: "string"
-                required: false
-                hint: "URL complète de votre profil LinkedIn (ex: https://www.linkedin.com/in/...)"
-              - label: "Lien Behance"
-                name: "behance"
+                hint: "Ex: LinkedIn, GitHub, Behance, X / Twitter, Instagram, WhatsApp, YouTube, Email, Téléphone, Site Web"
+              - label: "Lien URL complet (ou wa.me, mailto:, tel:)"
+                name: "url"
                 widget: "string"
-                required: false
-                hint: "URL de votre portfolio Behance (optionnel)"
-              - label: "Lien Twitter / X"
-                name: "twitter"
-                widget: "string"
-                required: false
-                hint: "URL de votre compte X / Twitter (optionnel)"
-              - label: "Lien GitHub"
-                name: "github"
-                widget: "string"
-                required: false
-                hint: "URL de votre profil GitHub (optionnel)"
+                hint: "Ex: https://linkedin.com/in/... ou https://wa.me/2126... ou mailto:... ou tel:..."
+              - label: "Icône"
+                name: "icon"
+                widget: "select"
+                default: "link"
+                hint: "Sélectionnez l'icône correspondante"
+                options:
+                  - { label: "LinkedIn", value: "linkedin" }
+                  - { label: "GitHub", value: "github" }
+                  - { label: "X / Twitter", value: "twitter" }
+                  - { label: "Behance", value: "behance" }
+                  - { label: "Instagram", value: "instagram" }
+                  - { label: "WhatsApp", value: "whatsapp" }
+                  - { label: "YouTube", value: "youtube" }
+                  - { label: "Email (Courriel)", value: "email" }
+                  - { label: "Téléphone", value: "phone" }
+                  - { label: "Lien Web / Globe", value: "link" }
 
       # Fichier 2 : Compétences
       - file: "src/content/data/skills.json"

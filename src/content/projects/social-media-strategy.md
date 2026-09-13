@@ -5,6 +5,8 @@ description: "Developed a full social media strategy for Maison Argan, a fiction
 tags: ["Social Media", "Content Strategy", "Audience Personas", "Meta Ads", "Brand Voice"]
 category: "strategy"
 date: "2024-09-05"
+order: 4
+visibility: both
 metrics:
   - value: "90 days"
     label: "Content calendar built"

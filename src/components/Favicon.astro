@@ -1,0 +1,28 @@
+---
+import profile from '../content/data/profile.json';
+import { resolveMediaUrl } from '../utils/projects';
+
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
+let faviconUrl = `${base}favicon.svg`;
+let faviconType = 'image/svg+xml';
+
+if (profile.favicon && profile.favicon.trim()) {
+  faviconUrl = resolveMediaUrl(profile.favicon.trim(), base);
+  const lower = faviconUrl.toLowerCase();
+  if (lower.endsWith('.png')) {
+    faviconType = 'image/png';
+  } else if (lower.endsWith('.ico')) {
+    faviconType = 'image/x-icon';
+  } else if (lower.endsWith('.webp')) {
+    faviconType = 'image/webp';
+  } else if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) {
+    faviconType = 'image/jpeg';
+  } else {
+    faviconType = 'image/svg+xml';
+  }
+}
+---
+
+<link rel="icon" type={faviconType} href={faviconUrl} />
+<link rel="shortcut icon" href={faviconUrl} />

@@ -1,16 +1,12 @@
 ---
 import { getCollection, render } from 'astro:content';
 import ProjectPage from '../../layouts/ProjectPage.astro';
+import { sortProjects, filterVisibleProjects } from '../../utils/projects';
 
 export async function getStaticPaths() {
-  const projects = await getCollection('projects');
-
-  // Tri identique à la page d'accueil : mis en avant d'abord, puis date décroissante
-  const sorted = [...projects].sort((a, b) => {
-    if (a.data.featured && !b.data.featured) return -1;
-    if (!a.data.featured && b.data.featured) return 1;
-    return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
-  });
+  const allProjects = await getCollection('projects');
+  const visible = filterVisibleProjects(allProjects);
+  const sorted = sortProjects(visible);
 
   return sorted.map((project, index) => ({
     params: {
@@ -36,6 +32,7 @@ const { Content } = await render(project);
   tags={project.data.tags}
   metrics={project.data.metrics}
   image={project.data.image}
+  gallery={project.data.gallery}
   link={project.data.link}
   status={project.data.status}
   prevProject={prevProject}

@@ -1,5 +1,5 @@
 ---
-// Page d'administration CMS (compatible Decap CMS / Sveltia CMS)
+import Favicon from '../../components/Favicon.astro';
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 <!doctype html>
@@ -8,7 +8,7 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Administration — Mon Portfolio</title>
-    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <Favicon />
     <!-- Lien vers la configuration Decap CMS / Sveltia CMS -->
     <link href={`${base}admin/config.yml`} type="text/yaml" rel="cms-config-url" />
 

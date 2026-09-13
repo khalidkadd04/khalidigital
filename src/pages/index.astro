@@ -3,13 +3,15 @@ import { getCollection } from 'astro:content';
 import profile from '../content/data/profile.json';
 import skillsData from '../content/data/skills.json';
 import certsData from '../content/data/certifications.json';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Favicon from '../components/Favicon.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import { sortProjects, filterProjectsForHome, resolveMediaUrl } from '../utils/projects';
 
 const rawProjects = await getCollection('projects');
-const projects = rawProjects.sort((a, b) => {
-  if (a.data.featured && !b.data.featured) return -1;
-  if (!a.data.featured && b.data.featured) return 1;
-  return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
-});
+const homeProjects = filterProjectsForHome(rawProjects);
+const projects = sortProjects(homeProjects);
 
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const initials = `${profile.firstName?.[0] || 'V'}${profile.lastName?.[0] || 'N'}`;
@@ -48,16 +50,6 @@ const getStatusBadge = (s?: string) => {
   }
   return { cls: 'status-default', dotCls: 'dot-default', text: s };
 };
-
-const resolveMediaUrl = (url?: string) => {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-    return url;
-  }
-  const cleanPath = url.replace(/^\/+/, '');
-  const encodedPath = cleanPath.split('/').map((segment) => encodeURIComponent(decodeURIComponent(segment))).join('/');
-  return `${base}${encodedPath}`;
-};
 ---
 
 <!DOCTYPE html>
@@ -74,6 +66,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{profile.siteTitle}</title>
   <meta name="description" content={profile.siteDescription} />
+
+  <Favicon />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -676,6 +670,43 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     }
     .project-link:hover { color: var(--off-white); }
 
+    /* ── Bouton Voir tous les projets ── */
+    .projects-cta-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 3.5rem;
+    }
+    .btn-all-projects {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.9rem 1.85rem;
+      border-radius: 12px;
+      background: rgba(124, 58, 237, 0.12);
+      border: 1px solid rgba(124, 58, 237, 0.4);
+      color: var(--off-white);
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      transition: background var(--t), border-color var(--t), transform var(--t), box-shadow var(--t), color var(--t);
+      touch-action: manipulation;
+    }
+    .btn-all-projects:hover {
+      background: var(--violet);
+      border-color: var(--violet);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(124, 58, 237, 0.4);
+      color: #fff;
+    }
+    .btn-all-projects svg {
+      transition: transform var(--t);
+    }
+    .btn-all-projects:hover svg {
+      transform: translateX(4px);
+    }
+
     /* ═══════════════════════════════════════════════════
        COMPÉTENCES
     ═══════════════════════════════════════════════════ */
@@ -1034,29 +1065,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
 
-  <nav id="navbar">
-    <div class="nav-logo">{initials}<span class="dot">.</span></div>
-
-    <div class="nav-links">
-      <a href="#about">À propos</a>
-      <a href="#projects">Projets</a>
-      <a href="#skills">Compétences</a>
-      <a href="#certs">Certifications</a>
-      <a href="#contact" class="nav-cta">Contact</a>
-    </div>
-
-    <button class="nav-hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-
-  <div class="nav-drawer" id="nav-drawer" aria-hidden="true">
-    <a href="#about"    class="drawer-link">À propos</a>
-    <a href="#projects" class="drawer-link">Projets</a>
-    <a href="#skills"   class="drawer-link">Compétences</a>
-    <a href="#certs"    class="drawer-link">Certifications</a>
-    <a href="#contact"  class="drawer-link">Contact</a>
-  </div>
+  <!-- Header unifié partagé -->
+  <Header />
 
   <section id="hero">
     <div class="hero-noise"></div>
@@ -1236,6 +1246,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </article>
       ))}
     </div>
+
+    <!-- Bouton vers la page dédiée de tous les projets -->
+    <div class="projects-cta-wrap reveal">
+      <a href={`${base}projects/`} class="btn-all-projects">
+        <span>Voir tous les projets</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
   </section>
 
   <section id="skills">
@@ -1316,29 +1336,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
 
           <div>
-            <div class="contact-aside-label">Réseaux</div>
-            <div class="social-links">
-              {profile.contact.linkedin && (
-                <a href={profile.contact.linkedin} class="social-link" aria-label="LinkedIn" target="_blank" rel="noopener">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-                </a>
-              )}
-              {profile.contact.behance && (
-                <a href={profile.contact.behance} class="social-link" aria-label="Behance" target="_blank" rel="noopener">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 3.211 3.483 3.312 4.588 2.029H23.7zm-7.249-4h4.556c-.016-1.08-.703-1.99-2.275-1.99-1.533 0-2.18.906-2.281 1.99zm-5.326 6.613c-.828 0-1.69-.153-2.286-.76-.604-.616-.948-1.554-.948-2.869 0-2.621 1.531-3.706 3.309-3.706.96 0 1.676.185 2.218.621V6H2v14h10.9c-.354-.394-.654-.843-.849-1.387zm-3.099-6.042c-.684 0-1.219.492-1.219 1.543 0 1.027.451 1.615 1.219 1.615.816 0 1.246-.626 1.246-1.615 0-.985-.441-1.543-1.246-1.543z"/></svg>
-                </a>
-              )}
-              {profile.contact.twitter && (
-                <a href={profile.contact.twitter} class="social-link" aria-label="Twitter/X" target="_blank" rel="noopener">
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                </a>
-              )}
-              {profile.contact.github && (
-                <a href={profile.contact.github} class="social-link" aria-label="GitHub" target="_blank" rel="noopener">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-                </a>
-              )}
-            </div>
+            <div class="contact-aside-label">Réseaux & Contacts</div>
+            <SocialLinks />
           </div>
 
         </div>
@@ -1428,40 +1427,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div></div>
   </section>
 
-  <footer>
-    <p>© {new Date().getFullYear()} {profile.firstName} {profile.lastName} — Tous droits réservés</p>
-    <p>{profile.roleBadge}</p>
-    <p style="margin-top: 0.75rem;">
-      <a href={`${base}admin/`} class="footer-admin-link">⚙️ Administration CMS</a>
-    </p>
-  </footer>
+  <Footer />
 
   <script>
-    /* ─ Hamburger menu ──────────────────────────────────────────── */
-    const hamburger = document.getElementById('hamburger');
-    const drawer    = document.getElementById('nav-drawer');
-
-    function toggleMenu(open: boolean) {
-      if (!hamburger || !drawer) return;
-      hamburger.classList.toggle('open', open);
-      drawer.classList.toggle('open', open);
-      drawer.setAttribute('aria-hidden', String(!open));
-      hamburger.setAttribute('aria-expanded', String(open));
-      document.body.style.overflow = open ? 'hidden' : '';
-    }
-
-    hamburger?.addEventListener('click', () => {
-      toggleMenu(!hamburger.classList.contains('open'));
-    });
-
-    document.querySelectorAll('.drawer-link').forEach(link => {
-      link.addEventListener('click', () => toggleMenu(false));
-    });
-
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') toggleMenu(false);
-    });
-
     /* ─ Curseur custom (pointer: fine uniquement) ───────────────── */
     if (window.matchMedia('(pointer: fine)').matches) {
       const dot  = document.getElementById('cursor-dot');

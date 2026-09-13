@@ -15,6 +15,7 @@
  */
 
 import '../styles/global.css';
+import Favicon from '../components/Favicon.astro';
 import profile from '../content/data/profile.json';
 
 interface Props {
@@ -54,8 +55,7 @@ const navItems = [
   <meta property="og:description" content={description} />
   <meta property="og:type"        content="website" />
 
-  <!-- Favicon (replace with your own in /public) -->
-  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <Favicon />
 </head>
 
 <body>

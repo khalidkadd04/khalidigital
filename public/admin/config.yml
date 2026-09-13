@@ -5,8 +5,10 @@
 # 1. Mode de connexion
 backend:
   name: github
-  repo: khalidkadd04/khalidigital # Dépôt GitHub pour Decap CMS
+  repo: khalidkadd04/khalidigital # Dépôt GitHub pour le CMS
   branch: main
+  auth_methods:
+    - token
 
 # Active l'édition locale sans mot de passe via 'npm run cms'
 local_backend: true

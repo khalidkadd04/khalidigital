@@ -61,16 +61,19 @@ export function filterVisibleProjects(projects: ProjectEntry[]): ProjectEntry[] 
  * Résout une URL de média (image, upload, etc.) en gérant les espaces,
  * les chemins relatifs et le sous-dossier de déploiement GitHub Pages.
  */
-export function resolveMediaUrl(url?: string, base: string = '/'): string {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-    return url;
+export function resolveMediaUrl(url?: string, base?: string): string {
+  if (!url || !url.trim()) return '';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
+    return trimmed;
   }
-  const cleanBase = base.endsWith('/') ? base : `${base}/`;
-  const cleanPath = url.replace(/^\/+/, '');
+  const effectiveBase = base || import.meta.env.BASE_URL || '/';
+  const cleanBase = effectiveBase.endsWith('/') ? effectiveBase : `${effectiveBase}/`;
+  const cleanPath = trimmed.replace(/^\/+/, '');
   const encodedPath = cleanPath
     .split('/')
     .map((segment) => encodeURIComponent(decodeURIComponent(segment)))
     .join('/');
   return `${cleanBase}${encodedPath}`;
 }
+

@@ -232,12 +232,14 @@ const pageDescription = `Explorez l'ensemble des études de cas, dashboards Powe
     }
 
     .project-thumb {
-      height: 180px;
+      aspect-ratio: 16/9;
       position: relative;
       background: linear-gradient(135deg, var(--surface), var(--card-bg));
       display: flex; align-items: center; justify-content: center;
       border-bottom: 1px solid var(--border);
       overflow: hidden;
+      text-decoration: none;
+      cursor: pointer;
     }
     .project-thumb img {
       width: 100%; height: 100%;
@@ -377,19 +379,19 @@ const pageDescription = `Explorez l'ensemble des études de cas, dashboards Powe
         const sb = getStatusBadge(project.data.status);
         return (
           <article class="project-card" data-category={project.data.category}>
-            <div class="project-thumb">
+            <a href={detailUrl} class="project-thumb" aria-label={`Voir le projet ${project.data.title}`}>
               {sb && (
                 <span class={`project-status-pill ${sb.cls}`}>
                   <span class={`status-dot ${sb.dotCls}`}></span>
                   {sb.text}
                 </span>
               )}
-              {project.data.image ? (
+              {project.data.image && project.data.image.trim() ? (
                 <img src={resolveMediaUrl(project.data.image, base)} alt={project.data.title} loading="lazy" />
               ) : (
                 <span class="thumb-icon">{getCategoryIcon(project.data.category)}</span>
               )}
-            </div>
+            </a>
 
             <div class="project-body">
               <div class="project-tags">

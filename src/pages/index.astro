@@ -64,7 +64,7 @@ const resolveMediaUrl = (url?: string) => {
 <html lang="fr">
 <head>
   <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+<script is:inline>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
@@ -1381,15 +1381,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const hamburger = document.getElementById('hamburger');
     const drawer    = document.getElementById('nav-drawer');
 
-    function toggleMenu(open) {
+    function toggleMenu(open: boolean) {
+      if (!hamburger || !drawer) return;
       hamburger.classList.toggle('open', open);
       drawer.classList.toggle('open', open);
-      drawer.setAttribute('aria-hidden', !open);
-      hamburger.setAttribute('aria-expanded', open);
+      drawer.setAttribute('aria-hidden', String(!open));
+      hamburger.setAttribute('aria-expanded', String(open));
       document.body.style.overflow = open ? 'hidden' : '';
     }
 
-    hamburger.addEventListener('click', () => {
+    hamburger?.addEventListener('click', () => {
       toggleMenu(!hamburger.classList.contains('open'));
     });
 
@@ -1409,22 +1410,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       document.addEventListener('mousemove', e => {
         mx = e.clientX; my = e.clientY;
-        dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+        if (dot) {
+          dot.style.left = mx + 'px';
+          dot.style.top = my + 'px';
+        }
       });
       (function loop() {
         rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
-        ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+        if (ring) {
+          ring.style.left = rx + 'px';
+          ring.style.top = ry + 'px';
+        }
         requestAnimationFrame(loop);
       })();
 
       document.querySelectorAll('a, button').forEach(el => {
         el.addEventListener('mouseenter', () => {
-          ring.style.width = '48px'; ring.style.height = '48px';
-          ring.style.borderColor = 'var(--teal)'; ring.style.opacity = '0.6';
+          if (!ring) return;
+          ring.style.width = '48px';
+          ring.style.height = '48px';
+          ring.style.borderColor = 'var(--teal)';
+          ring.style.opacity = '0.6';
         });
         el.addEventListener('mouseleave', () => {
-          ring.style.width = '30px'; ring.style.height = '30px';
-          ring.style.borderColor = 'var(--violet)'; ring.style.opacity = '0.45';
+          if (!ring) return;
+          ring.style.width = '30px';
+          ring.style.height = '30px';
+          ring.style.borderColor = 'var(--violet)';
+          ring.style.opacity = '0.45';
         });
       });
     }
@@ -1432,13 +1445,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     /* ─ Nav scrolled ────────────────────────────────────────────── */
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 50);
+      if (navbar) {
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
+      }
     }, { passive: true });
 
     /* ─ Reveal on scroll ─────────────────────────────────────────── */
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
       });
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
@@ -1447,7 +1465,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const barIo = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
-          e.target.querySelectorAll('.skill-bar').forEach(b => { b.style.width = b.dataset.width + '%'; });
+          e.target.querySelectorAll<HTMLElement>('.skill-bar').forEach(b => {
+            if (b.dataset.width) b.style.width = b.dataset.width + '%';
+          });
           barIo.unobserve(e.target);
         }
       });
@@ -1458,16 +1478,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     (function () {
       const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSehKkuGqamQNJUWh08raSZae03a0vpGZWZqAgzODG_RPm1v_Q/formResponse';
 
-      const form     = document.getElementById('gform');
-      const btn      = document.getElementById('gform-btn');
+      const form     = document.getElementById('gform') as HTMLFormElement | null;
+      const btn      = document.getElementById('gform-btn') as HTMLButtonElement | null;
       const btnText  = document.getElementById('btn-text');
       const spinner  = document.getElementById('btn-spinner');
       const btnIcon  = document.getElementById('btn-icon');
       const elOk     = document.getElementById('gform-success');
       const elErr    = document.getElementById('gform-error');
 
+      const inputNom     = document.getElementById('f-nom') as HTMLInputElement | null;
+      const inputEmail   = document.getElementById('f-email') as HTMLInputElement | null;
+      const inputSujet   = document.getElementById('f-sujet') as HTMLInputElement | null;
+      const inputMessage = document.getElementById('f-message') as HTMLTextAreaElement | null;
+
       /* Validation champ par champ */
-      function validateField(input, errId, checkEmail) {
+      function validateField(input: HTMLInputElement | HTMLTextAreaElement | null, errId: string, checkEmail: boolean) {
+        if (!input) return false;
         const err = document.getElementById(errId);
         let valid = true;
         if (input.required && !input.value.trim()) {
@@ -1481,28 +1507,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       /* Live feedback au blur */
-      document.getElementById('f-nom')    .addEventListener('blur', () => validateField(document.getElementById('f-nom'),     'err-nom',     false));
-      document.getElementById('f-email')  .addEventListener('blur', () => validateField(document.getElementById('f-email'),   'err-email',   true));
-      document.getElementById('f-sujet')  .addEventListener('blur', () => validateField(document.getElementById('f-sujet'),   'err-sujet',   false));
-      document.getElementById('f-message').addEventListener('blur', () => validateField(document.getElementById('f-message'), 'err-message', false));
+      inputNom?.addEventListener('blur', () => validateField(inputNom, 'err-nom', false));
+      inputEmail?.addEventListener('blur', () => validateField(inputEmail, 'err-email', true));
+      inputSujet?.addEventListener('blur', () => validateField(inputSujet, 'err-sujet', false));
+      inputMessage?.addEventListener('blur', () => validateField(inputMessage, 'err-message', false));
 
-      form.addEventListener('submit', async function (e) {
+      form?.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         /* Validation globale avant envoi */
-        const v1 = validateField(document.getElementById('f-nom'),     'err-nom',     false);
-        const v2 = validateField(document.getElementById('f-email'),   'err-email',   true);
-        const v3 = validateField(document.getElementById('f-sujet'),   'err-sujet',   false);
-        const v4 = validateField(document.getElementById('f-message'), 'err-message', false);
+        const v1 = validateField(inputNom, 'err-nom', false);
+        const v2 = validateField(inputEmail, 'err-email', true);
+        const v3 = validateField(inputSujet, 'err-sujet', false);
+        const v4 = validateField(inputMessage, 'err-message', false);
         if (!v1 || !v2 || !v3 || !v4) return;
 
         /* UI — état chargement */
-        btn.disabled = true;
-        btnText.textContent = 'Envoi en cours…';
-        spinner.style.display = 'block';
-        btnIcon.style.display = 'none';
-        elOk.style.display = elErr.style.display = 'none';
+        if (btn) btn.disabled = true;
+        if (btnText) btnText.textContent = 'Envoi en cours…';
+        if (spinner) spinner.style.display = 'block';
+        if (btnIcon) btnIcon.style.display = 'none';
+        if (elOk) elOk.style.display = 'none';
+        if (elErr) elErr.style.display = 'none';
 
+        if (!form) return;
         /* Construction des données */
         const body = new FormData(form);
 
@@ -1515,18 +1543,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             body:   body
           });
           /* no-cors → réponse opaque → on suppose le succès */
-          elOk.style.display = 'block';
+          if (elOk) elOk.style.display = 'block';
           form.reset();
           /* Nettoyer les classes erreur */
           form.querySelectorAll('.gform-input, .gform-textarea').forEach(el => el.classList.remove('error'));
         } catch (err) {
           /* Erreur réseau réelle */
-          elErr.style.display = 'block';
+          if (elErr) elErr.style.display = 'block';
         } finally {
-          btn.disabled = false;
-          btnText.textContent = 'Envoyer le message';
-          spinner.style.display = 'none';
-          btnIcon.style.display = 'block';
+          if (btn) btn.disabled = false;
+          if (btnText) btnText.textContent = 'Envoyer le message';
+          if (spinner) spinner.style.display = 'none';
+          if (btnIcon) btnIcon.style.display = 'block';
         }
       });
     })();

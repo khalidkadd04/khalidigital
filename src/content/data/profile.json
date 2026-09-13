@@ -1,18 +1,36 @@
 {
-  "siteTitle": "Votre Nom — Marketing Digital & Business Intelligence",
+  "siteTitle": "khalid kaddouri — Marketing Digital & Business Intelligence",
   "siteDescription": "Diplômé en Marketing Digital & Intelligence des Affaires — analyses data, stratégies digitales et growth marketing.",
   "firstName": "Votre",
-  "highlightWord": "Prénom",
   "lastName": "Nom",
+  "highlightWord": "Prénom",
   "roleBadge": "Diplômé — Marketing Digital & Intelligence des Affaires",
   "tagline": "Je transforme les données en décisions et les stratégies digitales en croissance mesurable. Data-driven, orienté résultats.",
   "heroPills": [
-    { "text": "Marketing Digital", "color": "violet" },
-    { "text": "Business Intelligence", "color": "teal" },
-    { "text": "Data Analytics", "color": "amber" },
-    { "text": "SEO / SEM", "color": "default" },
-    { "text": "Growth Marketing", "color": "default" },
-    { "text": "Tableau / Power BI", "color": "default" }
+    {
+      "text": "Marketing Digital",
+      "color": "violet"
+    },
+    {
+      "text": "Business Intelligence",
+      "color": "teal"
+    },
+    {
+      "text": "Data Analytics",
+      "color": "amber"
+    },
+    {
+      "text": "SEO / SEM",
+      "color": "default"
+    },
+    {
+      "text": "Growth Marketing",
+      "color": "default"
+    },
+    {
+      "text": "Tableau / Power BI",
+      "color": "default"
+    }
   ],
   "avatar": "",
   "cvFile": "",
@@ -20,9 +38,18 @@
   "aboutDiploma": "🎓 Diplômé en Marketing Digital & Intelligence des Affaires — 2025",
   "aboutBio": "Bonjour, je suis **Votre Prénom Nom**, fraîchement diplômé et passionné par l'intersection entre l'analyse de données et le marketing digital.\n\nPendant ma formation, j'ai développé des compétences solides en **analyse BI**, en **stratégie SEO/SEM** et en **gestion de campagnes digitales**, avec des projets concrets réalisés en équipe et en autonomie.\n\nJe recherche une opportunité où je pourrai apporter une vision data-driven et contribuer à la croissance d'une organisation ambitieuse.",
   "stats": [
-    { "value": "10+", "label": "Projets académiques" },
-    { "value": "6", "label": "Certifications" },
-    { "value": "Bac+5", "label": "Niveau d'études" }
+    {
+      "value": "10+",
+      "label": "Projets académiques"
+    },
+    {
+      "value": "6",
+      "label": "Certifications"
+    },
+    {
+      "value": "Bac+5",
+      "label": "Niveau d'études"
+    }
   ],
   "contact": {
     "email": "votre@email.com",

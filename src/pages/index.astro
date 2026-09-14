@@ -7,6 +7,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Favicon from '../components/Favicon.astro';
 import SocialLinks from '../components/SocialLinks.astro';
+import Fonts from '../components/Fonts.astro';
 import { sortProjects, filterProjectsForHome, resolveMediaUrl } from '../utils/projects';
 
 const rawProjects = await getCollection('projects');
@@ -55,7 +56,7 @@ const getStatusBadge = (s?: string) => {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- Google Tag Manager (Chargement optimisé hors chemin critique) -->
+  <!-- Google Tag Manager (Chargement intelligent sur interaction ou après rendu) -->
   <script is:inline>
     window.dataLayer = window.dataLayer || [];
     function initGTM() {
@@ -67,11 +68,13 @@ const getStatusBadge = (s?: string) => {
       'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
       })(window,document,'script','dataLayer','GTM-PG83BFNF');
     }
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(initGTM, { timeout: 2500 });
-    } else {
-      window.addEventListener('load', function() { setTimeout(initGTM, 500); });
-    }
+    var triggerEvents = ['scroll', 'touchstart', 'click', 'mousemove', 'keydown'];
+    var triggerGTM = function() {
+      initGTM();
+      triggerEvents.forEach(function(e) { window.removeEventListener(e, triggerGTM); });
+    };
+    triggerEvents.forEach(function(e) { window.addEventListener(e, triggerGTM, { passive: true, once: true }); });
+    setTimeout(initGTM, 4500);
   </script>
   <!-- End Google Tag Manager -->
   <meta charset="UTF-8" />
@@ -81,14 +84,8 @@ const getStatusBadge = (s?: string) => {
 
   <Favicon />
 
-  <!-- Polices web non bloquantes pour un FCP/LCP instantané -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" />
-  </noscript>
+  <!-- Polices locales ultra-rapides (zéro blocage, zéro requête Google Fonts) -->
+  <Fonts />
 
   <style>
     /* ═══════════════════════════════════════════════════
@@ -313,7 +310,7 @@ const getStatusBadge = (s?: string) => {
       margin-bottom: 1.5rem;
       max-width: 100%;
       line-height: 1.35;
-      animation: fadeUp 0.8s 0.1s both;
+      animation: fadeUp 0.4s both;
     }
     .hero-badge .badge-dot {
       width: 6px; height: 6px; border-radius: 50%;
@@ -337,13 +334,12 @@ const getStatusBadge = (s?: string) => {
       margin-bottom: 1.25rem;
       word-break: break-word;
     }
-    .hero-name .line { display: block; overflow: hidden; }
+    .hero-name .line { display: block; }
     .hero-name .line span {
       display: block;
-      transform: translateY(105%);
-      animation: slideUp 0.85s cubic-bezier(0.16,1,0.3,1) forwards;
+      animation: slideUp 0.45s cubic-bezier(0.16,1,0.3,1) both;
     }
-    .hero-name .line:nth-child(2) span { animation-delay: 0.08s; }
+    .hero-name .line:nth-child(2) span { animation-delay: 0.05s; }
     .hero-name .accent {
       color: transparent;
       -webkit-text-stroke: 2px var(--violet);
@@ -361,9 +357,12 @@ const getStatusBadge = (s?: string) => {
       transform: scaleX(0);
       transform-origin: left;
       will-change: transform;
-      animation: drawLine 0.8s 0.75s cubic-bezier(0.16,1,0.3,1) forwards;
+      animation: drawLine 0.6s 0.2s cubic-bezier(0.16,1,0.3,1) forwards;
     }
-    @keyframes slideUp { to { transform: translateY(0); } }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
     @keyframes drawLine { to { transform: scaleX(1); } }
 
     .hero-tagline {
@@ -372,17 +371,17 @@ const getStatusBadge = (s?: string) => {
       max-width: 500px;
       line-height: 1.7;
       margin-bottom: 2rem;
-      animation: fadeUp 0.8s 0.5s both;
+      animation: fadeUp 0.45s 0.08s both;
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
+      from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     .hero-pills {
       display: flex; flex-wrap: wrap; gap: 0.45rem;
       margin-bottom: 2rem;
-      animation: fadeUp 0.8s 0.6s both;
+      animation: fadeUp 0.45s 0.12s both;
     }
     .pill {
       font-family: var(--font-display);
@@ -400,7 +399,7 @@ const getStatusBadge = (s?: string) => {
 
     .hero-cta {
       display: flex; flex-wrap: wrap; gap: 0.85rem;
-      animation: fadeUp 0.8s 0.75s both;
+      animation: fadeUp 0.45s 0.16s both;
     }
     .btn {
       display: inline-flex; align-items: center; gap: 0.45rem;
@@ -422,7 +421,7 @@ const getStatusBadge = (s?: string) => {
       position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
       display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
       color: var(--muted); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
-      animation: fadeUp 1s 1.4s both;
+      animation: fadeUp 0.6s 0.4s both;
       z-index: 1;
     }
     .scroll-arrow {

@@ -4,6 +4,7 @@ import profile from '../../content/data/profile.json';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Favicon from '../../components/Favicon.astro';
+import Fonts from '../../components/Fonts.astro';
 import { sortProjects, filterProjectsForPage, resolveMediaUrl } from '../../utils/projects';
 
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
@@ -61,14 +62,8 @@ const pageDescription = `Explorez l'ensemble des études de cas, dashboards Powe
 
   <Favicon />
 
-  <!-- Polices web non bloquantes pour un FCP/LCP instantané -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" />
-  </noscript>
+  <!-- Polices locales ultra-rapides (zéro blocage, zéro requête Google Fonts) -->
+  <Fonts />
 
   <style>
     :root {

@@ -269,16 +269,16 @@ const navLinks = [
 
     if (!navbar || !hamburger || !drawer) return;
 
-    // Scroll state
+    // Scroll state sans forced reflow
+    let isScrolled = false;
     const handleScroll = () => {
-      if (window.scrollY > 30) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
+      const scrolled = window.scrollY > 30;
+      if (scrolled !== isScrolled) {
+        isScrolled = scrolled;
+        navbar.classList.toggle('scrolled', scrolled);
       }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
 
     // Toggle drawer
     function setDrawer(open: boolean) {

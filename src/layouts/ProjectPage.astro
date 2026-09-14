@@ -120,12 +120,24 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- Google Tag Manager -->
-  <script is:inline>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-PG83BFNF');</script>
+  <!-- Google Tag Manager (Chargement optimisé hors chemin critique) -->
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function initGTM() {
+      if (window._gtmLoaded) return;
+      window._gtmLoaded = true;
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-PG83BFNF');
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(initGTM, { timeout: 2500 });
+    } else {
+      window.addEventListener('load', function() { setTimeout(initGTM, 500); });
+    }
+  </script>
   <!-- End Google Tag Manager -->
 
   <meta charset="UTF-8" />
@@ -138,9 +150,14 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
   <meta property="og:description" content={description} />
   <meta property="og:type" content="article" />
 
+  <!-- Polices web non bloquantes pour un FCP/LCP instantané -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" />
+  </noscript>
 
   <Favicon />
 
@@ -161,8 +178,8 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
       --border:    rgba(255,255,255,0.07);
       --card-bg:   #16162A;
 
-      --font-display: 'Plus Jakarta Sans', sans-serif;
-      --font-body:    'DM Sans', sans-serif;
+      --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-body:    'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --ease:      cubic-bezier(0.4, 0, 0.2, 1);
       --t:         0.35s var(--ease);
     }
@@ -984,6 +1001,8 @@ const formattedDate = date ? new Date(date).toLocaleDateString('fr-FR', {
                     src={imgItem.url}
                     alt={imgItem.caption}
                     loading={idx === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={idx === 0 ? 'high' : 'auto'}
+                    decoding="async"
                   />
                   <div class="zoom-pill" aria-hidden="true">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">

@@ -55,13 +55,25 @@ const getStatusBadge = (s?: string) => {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- Google Tag Manager -->
-<script is:inline>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-PG83BFNF');</script>
-<!-- End Google Tag Manager -->
+  <!-- Google Tag Manager (Chargement optimisé hors chemin critique) -->
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function initGTM() {
+      if (window._gtmLoaded) return;
+      window._gtmLoaded = true;
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-PG83BFNF');
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(initGTM, { timeout: 2500 });
+    } else {
+      window.addEventListener('load', function() { setTimeout(initGTM, 500); });
+    }
+  </script>
+  <!-- End Google Tag Manager -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{profile.siteTitle}</title>
@@ -69,9 +81,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   <Favicon />
 
+  <!-- Polices web non bloquantes pour un FCP/LCP instantané -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" />
+  </noscript>
 
   <style>
     /* ═══════════════════════════════════════════════════
@@ -90,8 +107,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       --border:    rgba(255,255,255,0.07);
       --card-bg:   #16162A;
 
-      --font-display: 'Plus Jakarta Sans', sans-serif;
-      --font-body:    'DM Sans', sans-serif;
+      --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-body:    'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --ease:      cubic-bezier(0.4, 0, 0.2, 1);
       --t:         0.35s var(--ease);
     }
@@ -338,13 +355,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .hero-name .highlight::after {
       content: '';
       position: absolute; bottom: 2px; left: 0;
-      height: 3px; width: 0;
+      height: 3px; width: 100%;
       background: linear-gradient(90deg, var(--violet), var(--teal));
       border-radius: 2px;
+      transform: scaleX(0);
+      transform-origin: left;
+      will-change: transform;
       animation: drawLine 0.8s 0.75s cubic-bezier(0.16,1,0.3,1) forwards;
     }
     @keyframes slideUp { to { transform: translateY(0); } }
-    @keyframes drawLine { to { width: 100%; } }
+    @keyframes drawLine { to { transform: scaleX(1); } }
 
     .hero-tagline {
       font-size: clamp(0.95rem, 2.5vw, 1.15rem);
@@ -1144,7 +1164,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       -->
       <div class="about-photo-wrap reveal">
         {profile.avatar && profile.avatar.trim() ? (
-          <img src={resolveMediaUrl(profile.avatar, base)} alt={`${profile.firstName} ${profile.lastName}`} class="about-avatar-img" />
+          <img
+            src={resolveMediaUrl(profile.avatar, base)}
+            alt={`${profile.firstName} ${profile.lastName}`}
+            class="about-avatar-img"
+            width="400"
+            height="400"
+            loading="lazy"
+            decoding="async"
+          />
         ) : (
           <div class="photo-placeholder">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -1202,7 +1230,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               ) : null;
             })()}
             {project.data.image && project.data.image.trim() ? (
-              <img src={resolveMediaUrl(project.data.image, base)} alt={project.data.title} loading="lazy" />
+              <img
+                src={resolveMediaUrl(project.data.image, base)}
+                alt={project.data.title}
+                width="640"
+                height="360"
+                loading="lazy"
+                decoding="async"
+              />
             ) : (
               <span class="thumb-icon">{getCategoryIcon(project.data.category)}</span>
             )}
@@ -1466,14 +1501,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
       });
     }
-
-    /* ─ Nav scrolled ────────────────────────────────────────────── */
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      if (navbar) {
-        navbar.classList.toggle('scrolled', window.scrollY > 50);
-      }
-    }, { passive: true });
 
     /* ─ Reveal on scroll ─────────────────────────────────────────── */
     const io = new IntersectionObserver(entries => {

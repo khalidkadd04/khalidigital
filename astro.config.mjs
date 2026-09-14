@@ -17,4 +17,10 @@ export default defineConfig({
   base: isGithubActions && githubRepoName && !githubRepoName.endsWith('.github.io')
     ? `/${githubRepoName}/`
     : '/',
+
+  // Optimisation performances Core Web Vitals :
+  // Inliner les feuilles de styles pour éliminer les requêtes CSS bloquantes (FCP/LCP)
+  build: {
+    inlineStylesheets: 'always',
+  },
 });

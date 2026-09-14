@@ -243,11 +243,25 @@ collections:
             required: false
             hint: "Photo pour la section À propos (Recommandé: format carré 1:1, ex. 600x600px, WebP ou JPG < 300 Ko)"
 
-          - label: "CV (Fichier PDF)"
+          - label: "CV (Document PDF)"
             name: "cvFile"
             widget: "file"
+            accept: ".pdf,.PDF,application/pdf"
             required: false
-            hint: "Téléversez votre CV au format PDF pour permettre son téléchargement par les recruteurs"
+            hint: "Téléversez votre CV au format PDF. Cliquez sur 'Choisir un fichier' pour importer votre PDF, ou glissez-déposez le fichier spécifiquement dans cette zone"
+
+          - label: "Ouvrir le CV en mode aperçu (au lieu de le télécharger)"
+            name: "cvPreviewMode"
+            widget: "boolean"
+            default: false
+            required: false
+            hint: "Activez ce switch pour que le clic sur le bouton ouvre le CV dans un nouvel onglet pour aperçu direct. Désactivez-le pour forcer le téléchargement direct du fichier PDF."
+
+          - label: "Texte personnalisé du bouton CV (Optionnel)"
+            name: "cvButtonText"
+            widget: "string"
+            required: false
+            hint: "Texte affiché sur le bouton. Laissez vide pour utiliser automatiquement 'Consulter CV' (mode aperçu) ou 'Télécharger CV' (mode téléchargement)."
 
           - label: "Titre de la section À propos"
             name: "aboutTitle"
